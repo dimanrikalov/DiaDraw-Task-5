@@ -17,5 +17,5 @@
 }
 
 .inputContainer input:focus {
-    border-color: blue;
+    border-color: #00acee;
 }

@@ -1,0 +1,9 @@
+ul {
+	list-style-type: none;
+	display: flex;
+	flex-direction: column;
+	gap: 21px;
+	padding: 24px;
+	height: 75vh;
+	overflow-y: scroll;
+}
