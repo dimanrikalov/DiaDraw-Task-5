@@ -11,23 +11,13 @@
 	align-self: flex-end;
 }
 
-.operationsContainer button {
-	font-size: 24px;
-	background: none;
-	display: flex;
-	border: none;
-	cursor: pointer;
-	color: #1da1f2;
-}
-
 .listsContainer {
 	width: 100%;
 	display: flex;
 	justify-content: space-between;
 }
 
-.leftSide,
-.rightSide {
+.listContainer {
 	display: flex;
 	flex-direction: column;
 	gap: 16px;

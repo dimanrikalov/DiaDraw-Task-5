@@ -1,6 +1,7 @@
 import styles from './Item.module.css';
 import { Button } from '../Button/Button';
-import { MdEditSquare, MdRemoveCircle } from 'react-icons/md';
+import { LuEdit } from 'react-icons/lu';
+import { RiDeleteBin7Line } from 'react-icons/ri';
 
 export const Item = () => {
 	const handleEdit = () => {};
@@ -8,25 +9,12 @@ export const Item = () => {
 	const handleDelete = () => {};
 
 	return (
-		<li>
-			<div className={styles.cardBackground}>
-				<div className={styles.leftSide}>
-					<h2>Milkshake</h2>
-					<h3>$3.50</h3>
-				</div>
-				<div className={styles.rightSide}>
-					<Button
-						icon={<MdEditSquare color={'#00acee'} size={28} />}
-						text={''}
-						onClick={handleEdit}
-					/>
-					<Button
-						icon={<MdRemoveCircle color={'#00acee'} size={28} />}
-						text={''}
-						onClick={handleDelete}
-					/>
-				</div>
-			</div>
-		</li>
+		<div className={styles.cardBackground}>
+			<p>Banana</p>
+			<p>Qty: 2</p>
+			<p>Price: $3.50</p>
+			<Button icon={<LuEdit />} onClick={handleEdit} />
+			<Button icon={<RiDeleteBin7Line />} onClick={handleDelete} />
+		</div>
 	);
 };

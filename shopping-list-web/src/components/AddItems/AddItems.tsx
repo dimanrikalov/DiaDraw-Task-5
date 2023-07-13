@@ -1,11 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../router';
+import { MdCancel } from 'react-icons/md';
 import { List } from '../utils/List/List';
 import { Item } from '../utils/Item/Item';
 import styles from './AddItems.module.css';
 import { HiDocument } from 'react-icons/hi';
-import { ROUTES } from '../../router';
-import { MdCancel } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircle } from 'react-icons/io';
+import { Button } from '../utils/Button/Button';
 import { IoChevronBackCircle } from 'react-icons/io5';
 
 export const AddItems = () => {
@@ -15,21 +16,19 @@ export const AddItems = () => {
 		<div className={styles.container}>
 			<div className={styles.listContainer}>
 				<div className={styles.titleDiv}>
-					<h4>Bought items</h4>
+					<h4>Items to add</h4>
 					<div className={styles.operationsContainer}>
-						<button>
-							<HiDocument />
-						</button>
-						<button>
-							<IoIosAddCircle />
-						</button>
-						<button>
-							<MdCancel />
-						</button>
+						<Button
+							icon={<HiDocument />}
+							onClick={() => navigate(ROUTES.CREATE_ITEM)}
+						/>
+						<Button icon={<IoIosAddCircle />} />
+						<Button icon={<MdCancel />} />
 					</div>
-					<button onClick={()=>navigate(ROUTES.HOME)}>
-						<IoChevronBackCircle />
-					</button>
+					<Button
+						icon={<IoChevronBackCircle />}
+						onClick={() => navigate(ROUTES.HOME)}
+					/>
 				</div>
 				<List>
 					<Item />

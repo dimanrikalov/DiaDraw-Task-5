@@ -3,21 +3,29 @@ import styles from './Input.module.css';
 export enum InputTypes {
 	NAME_INPUT = 'name-input',
 	PRICE_INPUT = 'price-input',
+	QUANTITY_INPUT = 'quantity-input',
 }
 
-export const Input = ({ inputType }: { inputType: InputTypes }) => {
-	if (inputType === InputTypes.NAME_INPUT) {
-		return (
-			<div className={styles.inputContainer}>
-				<label htmlFor="name">Enter item name</label>
-				<input id="name" type="text" placeholder="Milkshake" />
-			</div>
-		);
-	}
+export enum Type {
+	TEXT = 'text',
+	NUMBER = 'number',
+}
+
+export const Input = ({
+	label,
+	placeholder,
+	type,
+	inputType,
+}: {
+	label: string;
+	placeholder: string;
+	type: Type;
+	inputType: InputTypes;
+}) => {
 	return (
 		<div className={styles.inputContainer}>
-			<label htmlFor="price">Enter item's price</label>
-			<input id="price" type="text" placeholder="$3.60" />
+			<label htmlFor={inputType}>{label}</label>
+			<input id={inputType} type={type} placeholder={placeholder} />
 		</div>
 	);
 };

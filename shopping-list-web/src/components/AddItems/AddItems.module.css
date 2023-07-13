@@ -6,24 +6,15 @@
 }
 
 .titleDiv {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .operationsContainer {
 	display: flex;
 	gap: 16px;
 	align-self: flex-end;
-}
-
-.container button {
-	font-size: 24px;
-	background: none;
-	display: flex;
-	border: none;
-	cursor: pointer;
-	color: #1da1f2;
 }
 
 .listsContainer {
