@@ -1,12 +1,15 @@
 import styles from './AddItems.module.css';
 import { Item } from '../utils/Item/Item';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../Router';
 
 export const AddItems = () => {
+	const navigate = useNavigate();
 	return (
 		<>
 			<div className={styles.titleDiv}>
 				<h2>Add items to the list</h2>
-				<button>View bought items</button>
+				<button onClick={()=>navigate(ROUTES.HOME)}>View to-buy list</button>
 			</div>
 			<div className={styles.listContainer}>
 				<ul>
@@ -41,7 +44,7 @@ export const AddItems = () => {
 
 			<ul className={styles.operations}>
 				<li>
-					<button>Create new product</button>
+					<button onClick={()=>navigate(ROUTES.CREATE_ITEM)}>Create new product</button>
 				</li>
 				<li>
 					<button>Add</button>

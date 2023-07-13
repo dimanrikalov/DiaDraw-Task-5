@@ -1,15 +1,15 @@
-import { Form } from './components/utils/Form/Form';
+import { Router } from './Router';
 import styles from './App.module.css';
-import { AddItems } from './components/AddItems/AddItems';
-import { ToBuyList } from './components/ToBuyList/ToBuyList';
+import { BrowserRouter } from 'react-router-dom';
 import { Wrapper } from './components/utils/Wrapper/Wrapper';
-import { CreateItem } from './components/CreateItem/CreateItem';
 
 function App() {
 	return (
 		<div className={styles.container}>
 			<Wrapper>
-				<CreateItem />
+				<BrowserRouter>
+					<Router />
+				</BrowserRouter>
 			</Wrapper>
 		</div>
 	);
