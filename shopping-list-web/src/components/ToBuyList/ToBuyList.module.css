@@ -1,17 +1,34 @@
-.operations {
+.container {
+	width: 70%;
 	display: flex;
-	align-self: center;
-	gap: 12px;
+	flex-direction: column;
+	align-items: center;
+}
+
+.operationsContainer {
+	display: flex;
+	gap: 16px;
+	align-self: flex-end;
+}
+
+.operationsContainer button {
+	font-size: 24px;
+	background: none;
+	display: flex;
+	border: none;
+	cursor: pointer;
+	color: #1da1f2;
 }
 
 .listsContainer {
+	width: 100%;
 	display: flex;
-	justify-content: space-evenly;
-	gap: 32px;
-	width: 70%;
-	align-self: center;
+	justify-content: space-between;
 }
 
-.listContainer {
-	width: 100%;
+.leftSide,
+.rightSide {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
 }
