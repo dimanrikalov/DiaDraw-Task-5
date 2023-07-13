@@ -1,9 +1,11 @@
+import { ROUTES } from '../../Router';
 import { Item } from '../utils/Item/Item';
+import { List } from '../utils/List/List';
 import styles from './ToBuyList.module.css';
-import { RiEditCircleLine } from 'react-icons/ri';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../Router';
+import { Button } from '../utils/Button/Button';
+import { RiEditCircleLine } from 'react-icons/ri';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
@@ -11,58 +13,33 @@ export const ToBuyList = () => {
 	return (
 		<>
 			<div className={styles.operations}>
-				<button onClick={()=>navigate(ROUTES.ADD_ITEM)}>
-					<AiOutlinePlus />
-					Add
-				</button>
-				<button>
-					<RiEditCircleLine />
-					Edit
-				</button>
+				<Button
+					icon={<AiOutlinePlus />}
+					text={'Add'}
+					onClick={() => navigate(ROUTES.ADD_ITEM)}
+				/>
+				<Button
+					icon={<RiEditCircleLine />}
+					text={'Edit'}
+					onClick={() => {}}
+				/>
 			</div>
-			<div className={styles.listContainer}>
-				<div className={styles.titleDiv}>
-					<h2>Items to buy</h2>
-					<button onClick={()=>navigate(ROUTES.ALREADY_BOUGHT_ITEMS)}>View bought items</button>
+
+			<div className={styles.listsContainer}>
+				<div className={styles.listContainer}>
+					<h1>To buy</h1>
+					<List>
+						<Item />
+						<Item />
+					</List>
 				</div>
-				<ul>
-					<li>
+				<div className={styles.listContainer}>
+					<h1>Already bought</h1>
+					<List>
 						<Item />
-					</li>
-					<li>
 						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-					<li>
-						<Item />
-					</li>
-				</ul>
+					</List>
+				</div>
 			</div>
 		</>
 	);

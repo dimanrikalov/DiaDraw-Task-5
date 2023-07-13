@@ -1,3 +1,11 @@
+.addItemsContainer {
+	width: 33%;
+	align-self: center;
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
 .titleDiv {
 	display: flex;
 	align-items: center;

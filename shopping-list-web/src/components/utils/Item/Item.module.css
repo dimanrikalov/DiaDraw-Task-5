@@ -1,11 +1,12 @@
 .cardBackground {
-	padding: 24px;
+	padding: 32px;
 	background-color: white;
 	border-radius: 12px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	box-shadow: 0px 0px 16px 4px rgba(0, 0, 0, 0.36);
+	
 }
 
 .cardBackground .leftSide {

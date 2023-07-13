@@ -1,13 +1,7 @@
 .operations {
 	display: flex;
-	align-self: flex-end;
+	align-self: center;
 	gap: 12px;
-}
-
-.titleDiv {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
 }
 
 .titleDiv button,
@@ -25,22 +19,16 @@
 	gap: 6px;
 }
 
-.listContainer {
+.listsContainer {
 	display: flex;
-	flex-direction: column;
+	justify-content: space-evenly;
 	gap: 32px;
+	width: 70%;
+	align-self: center;
 }
-
-.listContainer ul {
-	list-style-type: none;
-	display: flex;
-	flex-direction: column;
-	gap: 21px;
-	padding: 24px;
-	height: 75vh;
-	overflow-y: scroll;
+.listContainer {
+	width: 100%;
 }
-
 ::-webkit-scrollbar {
 	width: 5px;
 }
