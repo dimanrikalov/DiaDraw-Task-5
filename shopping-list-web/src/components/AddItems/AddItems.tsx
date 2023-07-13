@@ -1,9 +1,9 @@
-import styles from './AddItems.module.css';
-import { Item } from '../utils/Item/Item';
-import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../router';
-import { Button } from '../utils/Button/Button';
+import { Item } from '../utils/Item/Item';
 import { List } from '../utils/List/List';
+import styles from './AddItems.module.css';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../utils/Button/Button';
 
 export const AddItems = () => {
 	const navigate = useNavigate();
@@ -25,11 +25,11 @@ export const AddItems = () => {
 
 			<div className={styles.operations}>
 				<Button
-					text={'Create new product'}
+					text={'Create new item'}
 					onClick={() => navigate(ROUTES.CREATE_ITEM)}
 				/>
 
-				<Button text={'Add'} onClick={() => {}} />
+				<Button text={'Add items'} onClick={() => {}} />
 
 				<Button text={'Cancel'} onClick={() => {}} />
 			</div>
