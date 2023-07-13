@@ -1,0 +1,21 @@
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.inputContainer label {
+    font-size: 18px;
+}
+
+.inputContainer input {
+    padding: 6px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    outline: none;
+    border: 1px solid grey;
+}
+
+.inputContainer input:focus {
+    border-color: blue;
+}
