@@ -1,4 +1,4 @@
-import { ROUTES } from '../../Router';
+import { ROUTES } from '../../router';
 import { Item } from '../utils/Item/Item';
 import { List } from '../utils/List/List';
 import styles from './ToBuyList.module.css';

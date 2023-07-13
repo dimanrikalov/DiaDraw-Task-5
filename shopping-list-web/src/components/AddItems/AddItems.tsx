@@ -1,7 +1,7 @@
 import styles from './AddItems.module.css';
 import { Item } from '../utils/Item/Item';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../Router';
+import { ROUTES } from '../../router';
 import { Button } from '../utils/Button/Button';
 import { List } from '../utils/List/List';
 
