@@ -1,0 +1,58 @@
+.operations {
+	display: flex;
+	align-self: flex-end;
+	gap: 12px;
+}
+
+.titleDiv {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.titleDiv button,
+.operations button {
+	padding: 6px 24px;
+	border-radius: 6px;
+	font-size: 18px;
+	font-weight: 400;
+	border: none;
+	background-color: #00acee;
+	color: white;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.listContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.listContainer ul {
+	list-style-type: none;
+	display: flex;
+	flex-direction: column;
+	gap: 21px;
+	padding: 24px;
+	height: 75vh;
+	overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+	box-shadow: inset 0 0 5px lightgrey;
+	border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+	background: #00acee;
+	border-radius: 10px;
+}
