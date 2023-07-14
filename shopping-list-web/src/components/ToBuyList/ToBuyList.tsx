@@ -23,13 +23,13 @@ export const ToBuyList = () => {
 				<div className={styles.listContainer}>
 					<h4>Items to buy</h4>
 					<List>
-						<Item />
+						{/* <Item /> */}
 					</List>
 				</div>
 				<div className={styles.listContainer}>
 					<h4>Bought items</h4>
 					<List>
-						<Item />
+						{/* <Item /> */}
 					</List>
 				</div>
 			</div>

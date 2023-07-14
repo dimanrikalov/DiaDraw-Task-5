@@ -16,16 +16,26 @@ export const Input = ({
 	placeholder,
 	type,
 	inputType,
+	value,
+	setInputs,
 }: {
 	label: string;
 	placeholder: string;
 	type: Type;
 	inputType: InputTypes;
+	value: string;
+	setInputs: React.ChangeEventHandler;
 }) => {
 	return (
 		<div className={styles.inputContainer}>
 			<label htmlFor={inputType}>{label}</label>
-			<input id={inputType} type={type} placeholder={placeholder} />
+			<input
+				id={inputType}
+				type={type}
+				placeholder={placeholder}
+				value={value}
+				onChange={setInputs}
+			/>
 		</div>
 	);
 };

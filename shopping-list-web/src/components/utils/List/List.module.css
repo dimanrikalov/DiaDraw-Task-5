@@ -6,6 +6,7 @@
 	padding: 24px;
 	height: 75vh;
 	overflow-y: scroll;
+	align-items: center;
 }
 
 .list::-webkit-scrollbar {
