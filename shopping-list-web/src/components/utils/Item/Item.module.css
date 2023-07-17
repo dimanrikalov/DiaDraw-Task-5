@@ -11,3 +11,16 @@
 .cardBackground p {
 	font-size: 14px;
 }
+
+.leftSide,
+.rightSide {
+	display: flex;
+}
+
+.leftSide {
+	gap: 32px;
+}
+
+.rightSide {
+	gap: 16px;
+}
