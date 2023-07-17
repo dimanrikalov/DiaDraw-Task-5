@@ -3,7 +3,8 @@ import styles from './Form.module.css';
 import { Button } from '../Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { Input, InputTypes, Type } from '../Input/Input';
-import handleSubmit from '../../../handles/handleSubmit';
+import handleCreate from '../../../handles/handleCreate';
+import { COLLECTIONS } from '../../../enums/collectionEnums';
 
 export const Form = () => {
 	const navigate = useNavigate();
@@ -23,11 +24,14 @@ export const Form = () => {
 			setError('All fields are required');
 			return;
 		}
-		handleSubmit({
-			...inputs,
-			quantity: Number(inputs.quantity),
-			price: Number(inputs.price),
-		});
+		handleCreate(
+			{
+				...inputs,
+				quantity: Number(inputs.quantity),
+				price: Number(inputs.price),
+			},
+			COLLECTIONS.PRODUCTS_TO_BE_ADDED
+		);
 		navigate(-1);
 	};
 
