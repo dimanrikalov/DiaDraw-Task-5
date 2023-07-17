@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import styles from './Form.module.css';
 import { Button } from '../Button/Button';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { RootState } from '../../../app/store';
 import { useNavigate } from 'react-router-dom';
 import { Input, InputTypes, Type } from '../Input/Input';
-import handleCreate from '../../../handles/handleCreate';
 import { COLLECTIONS } from '../../../enums/collectionEnums';
+import { createProduct } from '../../../app/features/product/productSlice';
 
 export const Form = () => {
 	const navigate = useNavigate();
+	const product = useSelector((state: RootState) => state.product.value);
+	const dispatch = useDispatch();
 
 	const [inputs, setInputs] = useState({
 		name: '',
@@ -24,15 +29,16 @@ export const Form = () => {
 			setError('All fields are required');
 			return;
 		}
-		handleCreate(
-			{
-				...inputs,
-				quantity: Number(inputs.quantity),
-				price: Number(inputs.price),
-			},
-			COLLECTIONS.PRODUCTS_TO_BE_ADDED
-		);
-		navigate(-1);
+		dispatch(createProduct());
+		// handleCreate(
+		// 	{
+		// 		...inputs,
+		// 		quantity: Number(inputs.quantity),
+		// 		price: Number(inputs.price),
+		// 	},
+		// 	COLLECTIONS.PRODUCTS_TO_BE_ADDED
+		// );
+		// navigate(-1);
 	};
 
 	return (

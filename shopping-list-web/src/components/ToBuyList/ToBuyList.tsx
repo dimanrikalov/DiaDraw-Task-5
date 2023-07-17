@@ -8,23 +8,31 @@ import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { RiEditCircleFill } from 'react-icons/ri';
 import { DocumentData } from 'firebase/firestore';
-import handleQuery from '../../handles/handleQuery';
 import { COLLECTIONS } from '../../enums/collectionEnums';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store';
+import { useDispatch } from 'react-redux';
+import { createProduct } from '../../app/features/product/productSlice';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
 	const [itemsToBuy, setItemsToBuy] = useState<DocumentData[]>([]);
+	const product = useSelector((state: RootState) => state.product.value);
+	const dispatch = useDispatch();
 	useEffect(() => {
-		handleQuery(COLLECTIONS.PRODUCTS_TO_BUY).then(
-			(querySnapshot) => {
-				const res: DocumentData[] = [];
-				querySnapshot.forEach((x) => {
-					res.push(x.data());
-				});
+		console.log('Creating a product...');
+		// dispatch(createProduct());
 
-				setItemsToBuy(res);
-			}
-		);
+		// handleQuery(COLLECTIONS.PRODUCTS_TO_BUY)
+		// .then((querySnapshot) => {
+		// 		const res: DocumentData[] = [];
+		// 		querySnapshot.forEach((x) => {
+		// 			res.push(x.data());
+		// 		});
+
+		// 		setItemsToBuy(res);
+		// 	}
+		// );
 	}, [setItemsToBuy]);
 
 	return (
@@ -41,17 +49,17 @@ export const ToBuyList = () => {
 					<h4>Items to buy</h4>
 					<List>
 						{itemsToBuy.length > 0 ? (
-						itemsToBuy.map((itemToBuy) => (
-							<Item
-								key={Math.random()}
-								name={itemToBuy.name}
-								price={itemToBuy.price}
-								quantity={itemToBuy.quantity}
-							/>
-						))
-					) : (
-						<h4>List is currently empty</h4>
-					)}
+							itemsToBuy.map((itemToBuy) => (
+								<Item
+									key={Math.random()}
+									name={itemToBuy.name}
+									price={itemToBuy.price}
+									quantity={itemToBuy.quantity}
+								/>
+							))
+						) : (
+							<h4>List is currently empty</h4>
+						)}
 					</List>
 				</div>
 				<div className={styles.listContainer}>
