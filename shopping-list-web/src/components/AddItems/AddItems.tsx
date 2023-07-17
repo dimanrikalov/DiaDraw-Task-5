@@ -1,4 +1,5 @@
 import { ROUTES } from '../../router';
+import { Item } from '../utils/Item/Item';
 import { MdCancel } from 'react-icons/md';
 import { List } from '../utils/List/List';
 import styles from './AddItems.module.css';
@@ -7,23 +8,42 @@ import { HiDocument } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
+import handleMove from '../../handles/handleMove';
+import { DocumentData } from 'firebase/firestore';
 import handleQuery from '../../handles/handleQuery';
+import handleDelete from '../../handles/handleDelete';
 import { IoChevronBackCircle } from 'react-icons/io5';
-import { Item, ItemInterface } from '../utils/Item/Item';
+import { COLLECTIONS } from '../../enums/collectionEnums';
 
 export const AddItems = () => {
 	const navigate = useNavigate();
-	const [products, setProducts] = useState<ItemInterface[]>([]);
+	const [products, setProducts] = useState<DocumentData[]>([]);
 
-	//fix rendering every element twice
 	useEffect(() => {
-		handleQuery().then((querySnapshot) => {
-			querySnapshot.forEach((x) => {
-				const item = x.data().product;
-				setProducts((prev) => [...prev, item]);
-			});
-		});
+		handleQuery(COLLECTIONS.PRODUCTS_TO_BE_ADDED).then(
+			(querySnapshot) => {
+				const res: DocumentData[] = [];
+				querySnapshot.forEach((x) => {
+					res.push(x.data());
+				});
+
+				setProducts(res);
+			}
+		);
 	}, [setProducts]);
+
+	const handleCancel = () => {
+		handleDelete(COLLECTIONS.PRODUCTS_TO_BE_ADDED);
+		setProducts([]);
+	};
+
+	const handleSubmit = () => {
+		handleMove(
+			COLLECTIONS.PRODUCTS_TO_BE_ADDED,
+			COLLECTIONS.PRODUCTS_TO_BUY
+		);
+		setProducts([]);
+	};
 
 	return (
 		<div className={styles.container}>
@@ -35,8 +55,11 @@ export const AddItems = () => {
 							icon={<HiDocument />}
 							onClick={() => navigate(ROUTES.CREATE_ITEM)}
 						/>
-						<Button icon={<IoIosAddCircle />} />
-						<Button icon={<MdCancel />} />
+						<Button
+							icon={<IoIosAddCircle />}
+							onClick={handleSubmit}
+						/>
+						<Button icon={<MdCancel />} onClick={handleCancel} />
 					</div>
 					<Button
 						icon={<IoChevronBackCircle />}
@@ -45,12 +68,12 @@ export const AddItems = () => {
 				</div>
 				<List>
 					{products.length > 0 ? (
-						products.map((x) => (
+						products.map((product) => (
 							<Item
 								key={Math.random()}
-								name={x.name}
-								price={x.price}
-								quantity={x.quantity}
+								name={product.name}
+								price={product.price}
+								quantity={product.quantity}
 							/>
 						))
 					) : (
