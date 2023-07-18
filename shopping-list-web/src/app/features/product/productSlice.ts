@@ -1,60 +1,151 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import { collection, getDoc, getDocs } from 'firebase/firestore';
 import { firestore } from '../../../firebase_setup/firebase';
+import {
+	DocumentData,
+	DocumentReference,
+	addDoc,
+	collection,
+	deleteDoc,
+	doc,
+	getDoc,
+	getDocs,
+} from 'firebase/firestore';
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import { COLLECTIONS } from '../../../enums/collectionEnums';
 
 interface Product {
 	name: string;
 	price: number;
 	quantity: number;
+	ref: DocumentReference;
+	id?: string;
 }
 
-export const productsApi = createApi({
+const productsApi = createApi({
 	baseQuery: fakeBaseQuery(),
 	tagTypes: ['Product'],
 	endpoints: (builder) => ({
-		fetchItemsToAdd: builder.query<Product[] | undefined, void>({
-			async queryFn() {
+		fetchAll: builder.query<Product[], COLLECTIONS>({
+			async queryFn(collectionName) {
 				try {
-					const ref = collection(firestore, 'products-to-buy');
+					const ref = collection(firestore, collectionName);
 					const querySnapshot = await getDocs(ref);
-					let productsToBuy: Product[] = [];
+					let res: Product[] = [];
 					querySnapshot?.forEach((doc) => {
-						productsToBuy.push(doc.data() as Product);
+						res.push(doc.data() as Product);
 					});
-					return { data: productsToBuy };
+					return { data: res };
 				} catch (err: any) {
 					console.error(err.message);
 					return { error: err.message };
+				}
+			},
+			providesTags: ['Product'],
+		}),
+		create: builder.mutation<
+			undefined | string,
+			{ data: Product; collectionName: COLLECTIONS }
+		>({
+			async queryFn(body) {
+				const ref = collection(firestore, body.collectionName); // Firebase creates this automatically
+
+				try {
+					await addDoc(ref, body.data);
+				} catch (err: any) {
+					console.log(err);
+					return err.message;
+				}
+			},
+		}),
+		moveAll: builder.mutation<
+			undefined | string,
+			{ srcCollection: COLLECTIONS; destCollection: COLLECTIONS }
+		>({
+			async queryFn(body) {
+				try {
+					const { data } = useFetchAllQuery(body.srcCollection);
+					
+					if (data) {
+						data.forEach((product) => {
+							useCreateMutation({
+								data: product,
+								collectionName: body.destCollection,
+							});
+							deleteDoc(product.ref);
+						});
+					}
+				} catch (err: any) {
+					return err.message;
+				}
+			},
+		}),
+
+		deleteAll: builder.mutation<undefined | string, COLLECTIONS>({
+			async queryFn(collectionToModify) {
+				try {
+					const { data } = useFetchAllQuery(collectionToModify);
+					if (typeof data === 'string') {
+						throw new Error('Could not fetch collection!');
+					}
+					if (data) {
+						await Promise.all(
+							data.map((product) => deleteDoc(product.ref))
+						);
+					}
+				} catch (err: any) {
+					return err.message;
+				}
+			},
+		}),
+		getById: builder.query<
+			Product | string,
+			{ id: string; collectionName: COLLECTIONS }
+		>({
+			async queryFn({ id, collectionName }) {
+				try {
+					const snap = await getDoc(
+						doc(firestore, collectionName, id)
+					);
+					if (!snap.exists()) {
+						throw new Error('Product not found!');
+					}
+
+					return {
+						data: { ...snap.data(), id: snap.id, ref: snap.ref },
+					};
+				} catch (err: any) {
+					return err.message;
+				}
+			},
+			providesTags: ['Product'],
+		}),
+		deleteById: builder.mutation<
+			undefined | string,
+			{ id: string; collectionName: COLLECTIONS }
+		>({
+			async queryFn(body) {
+				try {
+					const { data: snapData } = useGetByIdQuery(body);
+
+					if (typeof snapData === 'string') {
+						throw new Error('Product to delete not found!');
+					}
+
+					deleteDoc(snapData!.ref);
+				} catch (err: any) {
+					return err.message;
 				}
 			},
 		}),
 	}),
 });
 
-// export interface ProductState {
-// 	value: Product[];
-// }
+export const {
+	useFetchAllQuery,
+	useCreateMutation,
+	useMoveAllMutation,
+	useDeleteAllMutation,
+	useGetByIdQuery,
+	useDeleteByIdMutation,
+} = productsApi;
 
-// const initialState: ProductState = {
-// 	value: [],
-// };
-
-// export const productSlice = createSlice({
-// 	name: 'product',
-// 	initialState,
-// 	reducers: {
-// 		//immer under the hood so i can directly modify the draftState
-// 		createProduct: (draftState) => {
-
-// 			console.log('product creation')
-// 		},
-// 		deleteProduct: (draftState) => {console.log('product deletion')},
-// 		moveProduct: (draftState) => {},
-// 	},
-// });
-
-// export const { createProduct, deleteProduct, moveProduct } =
-// 	productSlice.actions;
-
-// export default productSlice.reducer;
+export default productsApi;
