@@ -6,7 +6,7 @@ import { COLLECTIONS } from '../../../enums/collectionEnums';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { RootState } from '../../../app/store';
-import { deleteProduct } from '../../../app/features/product/productSlice';
+// import { deleteProduct } from '../../../app/features/product/productSlice';
 
 export interface ItemInterface {
 	name: string;
@@ -16,11 +16,11 @@ export interface ItemInterface {
 
 export const Item = ({ name, quantity, price }: ItemInterface) => {
 	const onEditHandler = () => {};
-	const product = useSelector((state: RootState) => state.product.value);
+	// const product = useSelector((state: RootState) => state.product.value);
 	const dispatch = useDispatch();
 	const onDeleteHandler = () => {
 		// handleDelete(COLLECTIONS.PRODUCTS_TO_BUY);
-		dispatch(deleteProduct());
+		// dispatch(deleteProduct());
 	};
 
 	return (

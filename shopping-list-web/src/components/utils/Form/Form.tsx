@@ -7,11 +7,11 @@ import { RootState } from '../../../app/store';
 import { useNavigate } from 'react-router-dom';
 import { Input, InputTypes, Type } from '../Input/Input';
 import { COLLECTIONS } from '../../../enums/collectionEnums';
-import { createProduct } from '../../../app/features/product/productSlice';
+// import { createProduct } from '../../../app/features/product/productSlice';
 
 export const Form = () => {
 	const navigate = useNavigate();
-	const product = useSelector((state: RootState) => state.product.value);
+	// const product = useSelector((state: RootState) => state.product.value);
 	const dispatch = useDispatch();
 
 	const [inputs, setInputs] = useState({
@@ -22,14 +22,15 @@ export const Form = () => {
 
 	const [error, setError] = useState('');
 
-	const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+	const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setError('');
 		if (Object.values(inputs).some((x) => !!x === false)) {
 			setError('All fields are required');
 			return;
 		}
-		dispatch(createProduct());
+		await 
+		// dispatch(createProduct());
 		// handleCreate(
 		// 	{
 		// 		...inputs,

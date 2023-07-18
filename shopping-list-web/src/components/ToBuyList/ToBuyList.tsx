@@ -12,13 +12,17 @@ import { COLLECTIONS } from '../../enums/collectionEnums';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { useDispatch } from 'react-redux';
-import { createProduct } from '../../app/features/product/productSlice';
+import { useGetByIdQuery } from '../../app/features/product/productSlice';
+// import { createProduct } from '../../app/features/product/productSlice';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
 	const [itemsToBuy, setItemsToBuy] = useState<DocumentData[]>([]);
-	const product = useSelector((state: RootState) => state.product.value);
-	const dispatch = useDispatch();
+	// const product = useSelector((state: RootState) => state.product.value);
+	const { data } = useGetByIdQuery({
+		id: '5V8yro7Hp44HsRYlIg4n',
+		collectionName: COLLECTIONS.PRODUCTS_TO_BUY,
+	});
 	useEffect(() => {
 		console.log('Creating a product...');
 		// dispatch(createProduct());
