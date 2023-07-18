@@ -7,6 +7,7 @@ import { RootState } from '../../../app/store';
 import { useNavigate } from 'react-router-dom';
 import { Input, InputTypes, Type } from '../Input/Input';
 import { COLLECTIONS } from '../../../enums/collectionEnums';
+import { ProductBody, useCreateMutation } from '../../../app/features/product/productSlice';
 // import { createProduct } from '../../../app/features/product/productSlice';
 
 export const Form = () => {
@@ -29,16 +30,10 @@ export const Form = () => {
 			setError('All fields are required');
 			return;
 		}
-		await 
-		// dispatch(createProduct());
-		// handleCreate(
-		// 	{
-		// 		...inputs,
-		// 		quantity: Number(inputs.quantity),
-		// 		price: Number(inputs.price),
-		// 	},
-		// 	COLLECTIONS.PRODUCTS_TO_BE_ADDED
-		// );
+		const data : ProductBody = {name: inputs.name, quantity: Number(inputs.quantity), price: Number(inputs.price)};
+		
+		// useCreateMutation({data, collectionName: COLLECTIONS.PRODUCTS_TO_BE_ADDED})
+		
 		// navigate(-1);
 	};
 

@@ -20,6 +20,22 @@ interface Product {
 	id?: string;
 }
 
+export interface ProductBody {
+	name: string;
+	quantity: number;
+	price: number;
+}
+
+interface CreateProductBody {
+	data: ProductBody;
+	collectionName: COLLECTIONS;
+}
+
+interface MoveProductsBody {
+	srcCollection: COLLECTIONS;
+	destCollection: COLLECTIONS;
+}
+
 const productsApi = createApi({
 	baseQuery: fakeBaseQuery(),
 	tagTypes: ['Product'],
@@ -41,10 +57,7 @@ const productsApi = createApi({
 			},
 			providesTags: ['Product'],
 		}),
-		create: builder.mutation<
-			undefined | string,
-			{ data: Product; collectionName: COLLECTIONS }
-		>({
+		create: builder.mutation<undefined | string, CreateProductBody>({
 			async queryFn(body) {
 				const ref = collection(firestore, body.collectionName); // Firebase creates this automatically
 
@@ -56,18 +69,15 @@ const productsApi = createApi({
 				}
 			},
 		}),
-		moveAll: builder.mutation<
-			undefined | string,
-			{ srcCollection: COLLECTIONS; destCollection: COLLECTIONS }
-		>({
+		moveAll: builder.mutation<undefined | string, MoveProductsBody>({
 			async queryFn(body) {
 				try {
-					const { data } = useFetchAllQuery(body.srcCollection);
-					
+					const { data } = await fetchAll(collectionToModify);
+
 					if (data) {
 						data.forEach((product) => {
 							useCreateMutation({
-								data: product,
+								data: product as ProductBody,
 								collectionName: body.destCollection,
 							});
 							deleteDoc(product.ref);
@@ -140,11 +150,11 @@ const productsApi = createApi({
 });
 
 export const {
+	useGetByIdQuery,
 	useFetchAllQuery,
 	useCreateMutation,
 	useMoveAllMutation,
 	useDeleteAllMutation,
-	useGetByIdQuery,
 	useDeleteByIdMutation,
 } = productsApi;
 
