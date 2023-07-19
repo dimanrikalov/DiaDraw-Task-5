@@ -4,52 +4,51 @@ import { Button } from '../Button/Button';
 import { RiDeleteBin7Line } from 'react-icons/ri';
 import { COLLECTIONS } from '../../../types/collectionEnums';
 import {
-	deleteProductById,
-	moveById,
-} from '../../../utils/firestore-operations';
-import { useState } from 'react';
-import { useDeleteByRefMutation } from '../../../app/productsApi';
-import { DocumentReference } from 'firebase/firestore';
+	useDeleteProductMutation,
+	useMoveProductMutation,
+} from '../../../app/productsApi';
 
 export interface ItemInterface {
 	name: string;
 	quantity: number;
 	price: number;
-	refHandle: DocumentReference;
+	id: string;
+	collectionName: COLLECTIONS;
 }
 
 export const Item = ({
 	name,
 	quantity,
 	price,
-	refHandle,
+	id,
+	collectionName,
 }: ItemInterface) => {
-	const [isChecked, setIsChecked] = useState(0);
-	const [deleteByRef] = useDeleteByRefMutation();
+	const [deleteProduct] = useDeleteProductMutation();
+	const [moveProduct] = useMoveProductMutation();
+
 	const onEditHandler = () => {};
 
 	const onDeleteHandler = () => {
-		deleteByRef(refHandle);
+		deleteProduct({ collectionName, id });
 	};
 
-	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		// setIsChecked((prev) => Number(!prev));
-
-		// if (collection === COLLECTIONS.PRODUCTS_TO_BUY) {
-		// 	await moveById(id, collection, COLLECTIONS.BOUGHT_PRODUCTS);
-		// 	return;
-		// }
-		// await moveById(id, collection, COLLECTIONS.PRODUCTS_TO_BUY);
+	const handleChange = async () => {
+		await moveProduct({ collectionName, id });
 	};
 
 	return (
 		<div className={styles.cardBackground}>
+			{collectionName === COLLECTIONS.BOUGHT_PRODUCTS && (
+				<div className={styles.crossLine}></div>
+			)}
 			<div className={styles.leftSide}>
 				<input
 					type="checkbox"
-					id={`${name}-${quantity}-${price}-${refHandle}`}
-					value={isChecked}
-					onChange={(e) => handleChange(e)}
+					id={`${name}-${quantity}-${price}-${id}`}
+					defaultChecked={
+						collectionName === COLLECTIONS.BOUGHT_PRODUCTS
+					}
+					onChange={handleChange}
 				/>
 				<p>{name}</p>
 				<p>Qty: {quantity}</p>

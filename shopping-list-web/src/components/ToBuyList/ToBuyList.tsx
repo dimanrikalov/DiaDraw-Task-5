@@ -1,35 +1,21 @@
 import { ROUTES } from '../../router';
 import { List } from '../utils/List/List';
 import { Item } from '../utils/Item/Item';
-import { useEffect, useState } from 'react';
 import styles from './ToBuyList.module.css';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { RiEditCircleFill } from 'react-icons/ri';
-import { DocumentData } from 'firebase/firestore';
 import { COLLECTIONS } from '../../types/collectionEnums';
-import { fetchAllProducts } from '../../utils/firestore-operations';
+import { useGetAllProductsQuery } from '../../app/productsApi';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
-	const [itemsToBuy, setItemsToBuy] = useState<DocumentData[]>([]);
-	const [boughtItems, setBoughtItems] = useState<DocumentData[]>([]);
-	const [isLoadingItemsToBuy, setIsLoadingItemsToBuy] = useState(true);
-	const [isLoadingBoughtItems, setIsLoadingBoughtItems] = useState(true);
-	useEffect(() => {
-		setIsLoadingItemsToBuy(true);
-		setIsLoadingBoughtItems(true);
+	const { data: productsToBuy, isLoading: isLoadingToBuy } =
+		useGetAllProductsQuery(COLLECTIONS.PRODUCTS_TO_BUY);
 
-		fetchAllProducts(COLLECTIONS.PRODUCTS_TO_BUY).then((res) => {
-			setIsLoadingItemsToBuy(false);
-			setItemsToBuy(res.data);
-		});
-		fetchAllProducts(COLLECTIONS.BOUGHT_PRODUCTS).then((res) => {
-			setIsLoadingBoughtItems(false);
-			setBoughtItems(res.data);
-		});
-	}, [setItemsToBuy, setIsLoadingItemsToBuy, setIsLoadingBoughtItems]);
+	const { data: boughtProducts, isLoading: isLoadingBought } =
+		useGetAllProductsQuery(COLLECTIONS.BOUGHT_PRODUCTS);
 
 	return (
 		<div className={styles.container}>
@@ -44,16 +30,19 @@ export const ToBuyList = () => {
 				<div className={styles.listContainer}>
 					<h4>Items to buy</h4>
 					<List>
-						{isLoadingItemsToBuy === true ? (
+						{isLoadingToBuy === true ? (
 							<h4>Loading...</h4>
-						) : itemsToBuy && itemsToBuy.length > 0 ? (
-							itemsToBuy.map((product) => (
+						) : productsToBuy &&
+						  typeof productsToBuy !== 'string' &&
+						  productsToBuy.length > 0 ? (
+							productsToBuy.map((product) => (
 								<Item
 									key={Math.random()}
 									name={product.name}
 									price={product.price}
 									quantity={product.quantity}
-									refHandle={product.ref}
+									id={product.id}
+									collectionName={COLLECTIONS.PRODUCTS_TO_BUY}
 								/>
 							))
 						) : (
@@ -64,16 +53,19 @@ export const ToBuyList = () => {
 				<div className={styles.listContainer}>
 					<h4>Bought items</h4>
 					<List>
-						{isLoadingBoughtItems === true ? (
+						{isLoadingBought === true ? (
 							<h4>Loading...</h4>
-						) : boughtItems && boughtItems.length > 0 ? (
-							boughtItems.map((product) => (
+						) : boughtProducts &&
+						  typeof boughtProducts !== 'string' &&
+						  boughtProducts.length > 0 ? (
+							boughtProducts.map((product) => (
 								<Item
 									key={Math.random()}
 									name={product.name}
 									price={product.price}
 									quantity={product.quantity}
-									refHandle={product.ref}
+									id={product.id}
+									collectionName={COLLECTIONS.BOUGHT_PRODUCTS}
 								/>
 							))
 						) : (

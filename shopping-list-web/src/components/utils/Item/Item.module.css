@@ -6,6 +6,7 @@
 	align-items: center;
 	justify-content: space-between;
 	width: 400px;
+	position: relative;
 }
 
 .cardBackground p {
@@ -23,4 +24,12 @@
 
 .rightSide {
 	gap: 16px;
+}
+
+.crossLine {
+	position: absolute;
+	left: 2.5%;
+	height: 1px;
+	width: 95%;
+	background-color: black;
 }

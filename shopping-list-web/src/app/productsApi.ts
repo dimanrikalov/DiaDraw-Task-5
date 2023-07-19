@@ -14,6 +14,7 @@ import {
 	addDoc,
 	collection,
 	deleteDoc,
+	doc,
 	getDoc,
 	getDocs,
 	onSnapshot,
@@ -29,46 +30,33 @@ export const productsApi = createApi({
 	endpoints: (builder) => ({
 		getAllProducts: builder.query<ProductEntry[] | string, string>({
 			providesTags: ['Products'],
-			queryFn: async (collectionName: string) => {
-				try {
-					const ref = collection(firestore, collectionName);
-					const querySnapshot = await getDocs(ref);
-					let res: ProductEntry[] = [];
-					querySnapshot.docs?.forEach((doc) => {
-						res.push({
-							...(doc.data() as Product),
-							id: doc.id,
-							ref: doc.ref,
-						});
-					});
-					console.log(res);
-					return res;
-				} catch (err: any) {
-					return err.message;
-				}
+			queryFn(collection: COLLECTIONS) {
+				return { data: [] };
 			},
 			async onCacheEntryAdded(
-				products,
+				collectionName: COLLECTIONS,
 				{ updateCachedData, cacheDataLoaded, cacheEntryRemoved }
 			) {
 				let unsubscribe;
 				try {
 					unsubscribe = onSnapshot(
-						collection(firestore, COLLECTIONS.PRODUCTS_TO_BUY),
+						collection(firestore, collectionName),
 						(snapshot) => {
 							updateCachedData((draft) => {
-								return snapshot?.docs?.map((doc) =>
-									doc.data()
-								) as ProductEntry[];
+								return snapshot?.docs?.map((doc) => {
+									return {
+										...doc.data(),
+										id: doc.id,
+									};
+								}) as ProductEntry[];
 							});
 						}
 					);
 				} catch (err: any) {
-					return err.message;
+					throw new Error('Error fetching products');
 				}
 				await cacheEntryRemoved;
 				unsubscribe && unsubscribe();
-				return unsubscribe;
 			},
 		}),
 		createProduct: builder.mutation({
@@ -132,12 +120,68 @@ export const productsApi = createApi({
 				}
 			},
 		}),
-		deleteByRef: builder.mutation({
-			queryFn: async (ref: DocumentReference) => {
+		deleteProduct: builder.mutation({
+			queryFn: async ({
+				collectionName,
+				id,
+			}: {
+				collectionName: COLLECTIONS;
+				id: string;
+			}) => {
 				try {
+					const ref = doc(firestore, collectionName, id);
 					await deleteDoc(ref);
 				} catch (err: any) {
 					return err.message;
+				}
+			},
+		}),
+		moveProduct: builder.mutation({
+			queryFn: async ({
+				collectionName,
+				id,
+			}: {
+				collectionName: COLLECTIONS;
+				id: string;
+			}) => {
+				if (collectionName === COLLECTIONS.PRODUCTS_TO_BUY) {
+					try {
+						const ref = doc(
+							firestore,
+							COLLECTIONS.PRODUCTS_TO_BUY,
+							id
+						);
+						const productData = (await getDoc(ref)).data();
+
+						const collectionRef = collection(
+							firestore,
+							COLLECTIONS.BOUGHT_PRODUCTS
+						);
+
+						await addDoc(collectionRef, productData);
+						await deleteDoc(ref);
+					} catch (err: any) {
+						return err.message;
+					}
+				} else {
+					try {
+						const ref = doc(
+							firestore,
+							COLLECTIONS.BOUGHT_PRODUCTS,
+							id
+						);
+						const productData = (await getDoc(ref)).data();
+
+						const collectionRef = collection(
+							firestore,
+							COLLECTIONS.PRODUCTS_TO_BUY
+						);
+
+						await addDoc(collectionRef, productData);
+						await deleteDoc(ref);
+					} catch (err: any) {
+						return err.message;
+					}
 				}
 			},
 		}),
@@ -149,5 +193,6 @@ export const {
 	useCreateProductMutation,
 	useDeleteAllMutation,
 	useMoveAllMutation,
-	useDeleteByRefMutation,
+	useDeleteProductMutation,
+	useMoveProductMutation,
 } = productsApi;
