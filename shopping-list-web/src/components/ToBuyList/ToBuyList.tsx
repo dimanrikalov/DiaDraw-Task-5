@@ -1,43 +1,36 @@
+import { useEffect, useState } from 'react';
 import { ROUTES } from '../../router';
 import { List } from '../utils/List/List';
 import { Item } from '../utils/Item/Item';
 import styles from './ToBuyList.module.css';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { RiEditCircleFill } from 'react-icons/ri';
 import { DocumentData } from 'firebase/firestore';
 import { COLLECTIONS } from '../../enums/collectionEnums';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
-import { useDispatch } from 'react-redux';
-import { useGetByIdQuery } from '../../app/features/product/productSlice';
-// import { createProduct } from '../../app/features/product/productSlice';
+import { fetchAllProducts } from '../../utils/firestore-operations';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
 	const [itemsToBuy, setItemsToBuy] = useState<DocumentData[]>([]);
-	// const product = useSelector((state: RootState) => state.product.value);
-	const { data } = useGetByIdQuery({
-		id: '5V8yro7Hp44HsRYlIg4n',
-		collectionName: COLLECTIONS.PRODUCTS_TO_BUY,
-	});
+	const [boughtItems, setBoughtItems] = useState<DocumentData[]>([]);
+	const [isLoadingItemsToBuy, setIsLoadingItemsToBuy] = useState(true);
+	const [isLoadingBoughtItems, setIsLoadingBoughtItems] = useState(true);
 	useEffect(() => {
-		console.log('Creating a product...');
-		// dispatch(createProduct());
+		setIsLoadingItemsToBuy(true);
+		setIsLoadingBoughtItems(true);
 
-		// handleQuery(COLLECTIONS.PRODUCTS_TO_BUY)
-		// .then((querySnapshot) => {
-		// 		const res: DocumentData[] = [];
-		// 		querySnapshot.forEach((x) => {
-		// 			res.push(x.data());
-		// 		});
+		fetchAllProducts(COLLECTIONS.PRODUCTS_TO_BUY).then((res) => {
+			setIsLoadingItemsToBuy(false);
+			setItemsToBuy(res.data);
+		});
+		fetchAllProducts(COLLECTIONS.BOUGHT_PRODUCTS).then((res) => {
+			setIsLoadingBoughtItems(false);
+			setBoughtItems(res.data);
+		});
 
-		// 		setItemsToBuy(res);
-		// 	}
-		// );
-	}, [setItemsToBuy]);
+	}, [setItemsToBuy, setIsLoadingItemsToBuy, setIsLoadingBoughtItems]);
 
 	return (
 		<div className={styles.container}>
@@ -52,13 +45,17 @@ export const ToBuyList = () => {
 				<div className={styles.listContainer}>
 					<h4>Items to buy</h4>
 					<List>
-						{itemsToBuy.length > 0 ? (
-							itemsToBuy.map((itemToBuy) => (
+						{isLoadingItemsToBuy === true ? (
+							<h4>Loading...</h4>
+						) : itemsToBuy && itemsToBuy.length > 0 ? (
+							itemsToBuy.map((product) => (
 								<Item
 									key={Math.random()}
-									name={itemToBuy.name}
-									price={itemToBuy.price}
-									quantity={itemToBuy.quantity}
+									name={product.name}
+									price={product.price}
+									quantity={product.quantity}
+									id={product.id}
+									collection={COLLECTIONS.PRODUCTS_TO_BUY}
 								/>
 							))
 						) : (
@@ -68,7 +65,24 @@ export const ToBuyList = () => {
 				</div>
 				<div className={styles.listContainer}>
 					<h4>Bought items</h4>
-					<List>{/* <Item /> */}</List>
+					<List>
+						{isLoadingBoughtItems === true ? (
+							<h4>Loading...</h4>
+						) : boughtItems && boughtItems.length > 0 ? (
+							boughtItems.map((product) => (
+								<Item
+									key={Math.random()}
+									name={product.name}
+									price={product.price}
+									quantity={product.quantity}
+									id={product.id}
+									collection={COLLECTIONS.BOUGHT_PRODUCTS}
+								/>
+							))
+						) : (
+							<h4>List is currently empty</h4>
+						)}
+					</List>
 				</div>
 			</div>
 		</div>

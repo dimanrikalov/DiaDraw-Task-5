@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import styles from './Form.module.css';
 import { Button } from '../Button/Button';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { RootState } from '../../../app/store';
 import { useNavigate } from 'react-router-dom';
 import { Input, InputTypes, Type } from '../Input/Input';
 import { COLLECTIONS } from '../../../enums/collectionEnums';
-import { ProductBody, useCreateMutation } from '../../../app/features/product/productSlice';
-// import { createProduct } from '../../../app/features/product/productSlice';
+import {
+	createProduct,
+	ProductBody,
+} from '../../../utils/firestore-operations';
 
 export const Form = () => {
 	const navigate = useNavigate();
-	// const product = useSelector((state: RootState) => state.product.value);
-	const dispatch = useDispatch();
 
 	const [inputs, setInputs] = useState({
 		name: '',
@@ -30,11 +27,14 @@ export const Form = () => {
 			setError('All fields are required');
 			return;
 		}
-		const data : ProductBody = {name: inputs.name, quantity: Number(inputs.quantity), price: Number(inputs.price)};
-		
-		// useCreateMutation({data, collectionName: COLLECTIONS.PRODUCTS_TO_BE_ADDED})
-		
-		// navigate(-1);
+		const data: ProductBody = {
+			name: inputs.name,
+			quantity: Number(inputs.quantity),
+			price: Number(inputs.price),
+		};
+		await createProduct(data, COLLECTIONS.PRODUCTS_TO_BE_ADDED);
+
+		navigate(-1);
 	};
 
 	return (

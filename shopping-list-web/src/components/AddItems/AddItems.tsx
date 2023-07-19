@@ -10,25 +10,37 @@ import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { DocumentData } from 'firebase/firestore';
 import { IoChevronBackCircle } from 'react-icons/io5';
-import { useFetchAllQuery } from '../../app/features/product/productSlice';
 import { COLLECTIONS } from '../../enums/collectionEnums';
+import {
+	moveAll,
+	deleteAll,
+	fetchAllProducts,
+} from '../../utils/firestore-operations';
 
 export const AddItems = () => {
 	const navigate = useNavigate();
 	const [products, setProducts] = useState<DocumentData[]>([]);
-	const {data, isLoading} = useFetchAllQuery(COLLECTIONS.PRODUCTS_TO_BUY);
+	// const {data, isLoading} = useFetchAllQuery(COLLECTIONS.PRODUCTS_TO_BUY);
+	const [isLoading, setIsLoading] = useState(true);
+	useEffect(() => {
+		setIsLoading(true);
+		fetchAllProducts(COLLECTIONS.PRODUCTS_TO_BE_ADDED).then((res) => {
+			setProducts(res.data);
+			setIsLoading(false);
+		});
+	}, [setIsLoading, setProducts, fetchAllProducts]);
 
-	const handleCancel = () => {
-		// handleDelete(COLLECTIONS.PRODUCTS_TO_BE_ADDED);
-		// setProducts([]);
+	const handleCancel = async () => {
+		await deleteAll(COLLECTIONS.PRODUCTS_TO_BE_ADDED);
+		setProducts([]);
 	};
 
-	const handleSubmit = () => {
-		// handleMove(
-		// 	COLLECTIONS.PRODUCTS_TO_BE_ADDED,
-		// 	COLLECTIONS.PRODUCTS_TO_BUY
-		// );
-		// setProducts([]);
+	const handleSubmit = async () => {
+		await moveAll(
+			COLLECTIONS.PRODUCTS_TO_BE_ADDED,
+			COLLECTIONS.PRODUCTS_TO_BUY
+		);
+		setProducts([]);
 	};
 
 	return (
@@ -53,30 +65,22 @@ export const AddItems = () => {
 					/>
 				</div>
 				<List>
-					{
-						isLoading === true ? <h4>Loading...</h4> :
-						data && data.length > 0 ? 
-							data.map((product) => (
-								<Item
-									key={Math.random()}
-									name={product.name}
-									price={product.price}
-									quantity={product.quantity}
-								/>
-							)): (<h4>List is currently empty</h4>)
-					}
-					{/* // {products.length > 0 ? (
-					// 	products.map((product) => (
-					// 		<Item
-					// 			key={Math.random()}
-					// 			name={product.name}
-					// 			price={product.price}
-					// 			quantity={product.quantity}
-					// 		/>
-					// 	))
-					// ) : (
-					// 	<h4>List is currently empty</h4>
-					// )} */}
+					{isLoading === true ? (
+						<h4>Loading...</h4>
+					) : products && products.length > 0 ? (
+						products.map((product) => (
+							<Item
+								key={Math.random()}
+								name={product.name}
+								price={product.price}
+								quantity={product.quantity}
+								id={product.id}
+								collection={COLLECTIONS.PRODUCTS_TO_BE_ADDED}
+							/>
+						))
+					) : (
+						<h4>List is currently empty</h4>
+					)}
 				</List>
 			</div>
 		</div>
