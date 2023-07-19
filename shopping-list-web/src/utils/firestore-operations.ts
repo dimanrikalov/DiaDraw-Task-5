@@ -8,7 +8,7 @@ import {
 	getDoc,
 	getDocs,
 } from 'firebase/firestore';
-import { COLLECTIONS } from '../enums/collectionEnums';
+import { COLLECTIONS } from '../types/collectionEnums';
 
 interface Product {
 	name: string;

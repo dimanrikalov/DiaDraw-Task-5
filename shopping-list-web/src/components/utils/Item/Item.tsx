@@ -2,44 +2,44 @@ import styles from './Item.module.css';
 import { LuEdit } from 'react-icons/lu';
 import { Button } from '../Button/Button';
 import { RiDeleteBin7Line } from 'react-icons/ri';
-import { COLLECTIONS } from '../../../enums/collectionEnums';
+import { COLLECTIONS } from '../../../types/collectionEnums';
 import {
 	deleteProductById,
 	moveById,
 } from '../../../utils/firestore-operations';
 import { useState } from 'react';
+import { useDeleteByRefMutation } from '../../../app/productsApi';
+import { DocumentReference } from 'firebase/firestore';
 
 export interface ItemInterface {
 	name: string;
 	quantity: number;
 	price: number;
-	id: string;
-	collection: COLLECTIONS;
+	refHandle: DocumentReference;
 }
 
 export const Item = ({
 	name,
 	quantity,
 	price,
-	id,
-	collection,
+	refHandle,
 }: ItemInterface) => {
 	const [isChecked, setIsChecked] = useState(0);
-
+	const [deleteByRef] = useDeleteByRefMutation();
 	const onEditHandler = () => {};
 
 	const onDeleteHandler = () => {
-		deleteProductById(id, collection);
+		deleteByRef(refHandle);
 	};
 
 	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		setIsChecked((prev) => Number(!prev));
+		// setIsChecked((prev) => Number(!prev));
 
-		if (collection === COLLECTIONS.PRODUCTS_TO_BUY) {
-			await moveById(id, collection, COLLECTIONS.BOUGHT_PRODUCTS);
-			return;
-		}
-		await moveById(id, collection, COLLECTIONS.PRODUCTS_TO_BUY);
+		// if (collection === COLLECTIONS.PRODUCTS_TO_BUY) {
+		// 	await moveById(id, collection, COLLECTIONS.BOUGHT_PRODUCTS);
+		// 	return;
+		// }
+		// await moveById(id, collection, COLLECTIONS.PRODUCTS_TO_BUY);
 	};
 
 	return (
@@ -47,7 +47,7 @@ export const Item = ({
 			<div className={styles.leftSide}>
 				<input
 					type="checkbox"
-					id="item-check"
+					id={`${name}-${quantity}-${price}-${refHandle}`}
 					value={isChecked}
 					onChange={(e) => handleChange(e)}
 				/>

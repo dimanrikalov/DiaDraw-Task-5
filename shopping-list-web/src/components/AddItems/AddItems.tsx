@@ -10,25 +10,31 @@ import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { DocumentData } from 'firebase/firestore';
 import { IoChevronBackCircle } from 'react-icons/io5';
-import { COLLECTIONS } from '../../enums/collectionEnums';
+import { COLLECTIONS } from '../../types/collectionEnums';
 import {
 	moveAll,
 	deleteAll,
 	fetchAllProducts,
 } from '../../utils/firestore-operations';
+import {
+	useDeleteAllMutation,
+	useMoveAllMutation,
+} from '../../app/productsApi';
 
 export const AddItems = () => {
 	const navigate = useNavigate();
 	const [products, setProducts] = useState<DocumentData[]>([]);
-	// const {data, isLoading} = useFetchAllQuery(COLLECTIONS.PRODUCTS_TO_BUY);
-	const [isLoading, setIsLoading] = useState(true);
+	// const {data, isLoadingProducts} = useFetchAllQuery(COLLECTIONS.PRODUCTS_TO_BUY);
+	const [deleteAll, { isLoading }] = useDeleteAllMutation();
+	const [moveAll] = useMoveAllMutation();
+	const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 	useEffect(() => {
-		setIsLoading(true);
+		setIsLoadingProducts(true);
 		fetchAllProducts(COLLECTIONS.PRODUCTS_TO_BE_ADDED).then((res) => {
 			setProducts(res.data);
-			setIsLoading(false);
+			setIsLoadingProducts(false);
 		});
-	}, [setIsLoading, setProducts, fetchAllProducts]);
+	}, [setIsLoadingProducts, setProducts, fetchAllProducts]);
 
 	const handleCancel = async () => {
 		await deleteAll(COLLECTIONS.PRODUCTS_TO_BE_ADDED);
@@ -36,10 +42,10 @@ export const AddItems = () => {
 	};
 
 	const handleSubmit = async () => {
-		await moveAll(
-			COLLECTIONS.PRODUCTS_TO_BE_ADDED,
-			COLLECTIONS.PRODUCTS_TO_BUY
-		);
+		await moveAll({
+			srcCollection: COLLECTIONS.PRODUCTS_TO_BE_ADDED,
+			destCollection: COLLECTIONS.PRODUCTS_TO_BUY,
+		});
 		setProducts([]);
 	};
 
@@ -65,7 +71,7 @@ export const AddItems = () => {
 					/>
 				</div>
 				<List>
-					{isLoading === true ? (
+					{isLoadingProducts === true ? (
 						<h4>Loading...</h4>
 					) : products && products.length > 0 ? (
 						products.map((product) => (
@@ -74,8 +80,7 @@ export const AddItems = () => {
 								name={product.name}
 								price={product.price}
 								quantity={product.quantity}
-								id={product.id}
-								collection={COLLECTIONS.PRODUCTS_TO_BE_ADDED}
+								refHandle={product.ref}
 							/>
 						))
 					) : (

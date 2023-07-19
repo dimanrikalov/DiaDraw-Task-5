@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
 import { ROUTES } from '../../router';
 import { List } from '../utils/List/List';
 import { Item } from '../utils/Item/Item';
+import { useEffect, useState } from 'react';
 import styles from './ToBuyList.module.css';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { RiEditCircleFill } from 'react-icons/ri';
 import { DocumentData } from 'firebase/firestore';
-import { COLLECTIONS } from '../../enums/collectionEnums';
+import { COLLECTIONS } from '../../types/collectionEnums';
 import { fetchAllProducts } from '../../utils/firestore-operations';
 
 export const ToBuyList = () => {
@@ -29,7 +29,6 @@ export const ToBuyList = () => {
 			setIsLoadingBoughtItems(false);
 			setBoughtItems(res.data);
 		});
-
 	}, [setItemsToBuy, setIsLoadingItemsToBuy, setIsLoadingBoughtItems]);
 
 	return (
@@ -54,8 +53,7 @@ export const ToBuyList = () => {
 									name={product.name}
 									price={product.price}
 									quantity={product.quantity}
-									id={product.id}
-									collection={COLLECTIONS.PRODUCTS_TO_BUY}
+									refHandle={product.ref}
 								/>
 							))
 						) : (
@@ -75,8 +73,7 @@ export const ToBuyList = () => {
 									name={product.name}
 									price={product.price}
 									quantity={product.quantity}
-									id={product.id}
-									collection={COLLECTIONS.BOUGHT_PRODUCTS}
+									refHandle={product.ref}
 								/>
 							))
 						) : (
