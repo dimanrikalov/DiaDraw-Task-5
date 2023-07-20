@@ -1,8 +1,10 @@
+import {
+	COLLECTIONS,
+	useDeleteProductMutation,
+} from '../../../app/productsApi';
 import { useState } from 'react';
 import { ItemCard } from './ItemCard';
-import { EditItem } from './EditItemCard';
-import { COLLECTIONS } from '../../../types/collectionEnums';
-import { useDeleteProductMutation } from '../../../app/productsApi';
+import { EditItemCard } from './EditItemCard';
 
 export interface ItemInterface {
 	id: string;
@@ -28,6 +30,13 @@ export const Item = ({
 	});
 
 	const onDeleteHandler = () => {
+		const hasConfirmed = window.confirm(
+			`Are you sure you want to delete "${name}" from the list?`
+		);
+
+		if (!hasConfirmed) {
+			return;
+		}
 		deleteProduct({ collectionName, id });
 	};
 
@@ -41,7 +50,7 @@ export const Item = ({
 	};
 
 	return isInEditMode ? (
-		<EditItem
+		<EditItemCard
 			id={id}
 			inputValues={inputValues}
 			collectionName={collectionName}

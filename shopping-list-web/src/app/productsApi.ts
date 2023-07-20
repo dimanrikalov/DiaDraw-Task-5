@@ -3,21 +3,38 @@ import {
 	getDoc,
 	addDoc,
 	getDocs,
+	updateDoc,
 	deleteDoc,
 	collection,
 	onSnapshot,
 	Unsubscribe,
-	updateDoc,
+	DocumentData,
 	FirestoreError,
+	DocumentReference,
 } from 'firebase/firestore';
-import {
-	Product,
-	ProductEntry,
-	CreateProductBody,
-} from '../types/productInterface';
 import { firestore } from '../firebase_setup/firebase';
-import { COLLECTIONS } from '../types/collectionEnums';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export enum COLLECTIONS {
+	PRODUCTS_TO_BUY = 'productsToBuy',
+	BOUGHT_PRODUCTS = 'boughtProducts',
+	PRODUCTS_TO_BE_ADDED = 'productsToAdd',
+}
+
+export interface Product {
+	name: string;
+	price: number;
+	quantity: number;
+}
+
+export interface ProductEntry extends Product {
+	id: string;
+	ref: DocumentReference<DocumentData, DocumentData>;
+}
+
+export interface CreateProductBody extends Product {
+	collectionToModify: COLLECTIONS;
+}
 
 interface IMoveAllBody {
 	srcCollection: COLLECTIONS;

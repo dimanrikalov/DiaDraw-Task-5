@@ -2,8 +2,7 @@ import styles from './Item.module.css';
 import { Button } from '../Button/Button';
 import { Input, InputTypes, Type } from '../Input/Input';
 import { IProductData, PRODUCT_DATA_KEYS } from './ItemCard';
-import { COLLECTIONS } from '../../../types/collectionEnums';
-import { useEditProductMutation } from '../../../app/productsApi';
+import { COLLECTIONS, useEditProductMutation } from '../../../app/productsApi';
 
 interface IEditItemBody {
 	id: string;
@@ -13,7 +12,7 @@ interface IEditItemBody {
 	setInputValues: React.Dispatch<React.SetStateAction<IProductData>>;
 }
 
-export const EditItem = ({
+export const EditItemCard = ({
 	id,
 	inputValues,
 	collectionName,
@@ -22,7 +21,9 @@ export const EditItem = ({
 }: IEditItemBody) => {
 	const [editProduct] = useEditProductMutation();
 
-	const onEditHandler = async () => {
+	const onEditHandler = async (e: React.FormEvent) => {
+		e.preventDefault();
+
 		await editProduct({
 			collectionName,
 			id,
@@ -32,6 +33,7 @@ export const EditItem = ({
 				quantity: Number(inputValues.quantity),
 			},
 		});
+
 		setIsInEditMode(false);
 	};
 
@@ -47,7 +49,7 @@ export const EditItem = ({
 			{collectionName === COLLECTIONS.BOUGHT_PRODUCTS && (
 				<div className={styles.crossLine}></div>
 			)}
-			<div className={styles.editContainer}>
+			<form className={styles.editContainer} onSubmit={onEditHandler}>
 				<Input
 					type={Type.TEXT}
 					placeholder="Watermelon"
@@ -75,8 +77,8 @@ export const EditItem = ({
 						setInput(e, PRODUCT_DATA_KEYS.PRICE)
 					}
 				/>
-				<Button text={'Edit'} onClick={onEditHandler} />
-			</div>
+				<Button text={'Edit'} />
+			</form>
 		</div>
 	);
 };

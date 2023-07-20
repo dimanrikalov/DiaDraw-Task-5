@@ -1,19 +1,21 @@
+import {
+	COLLECTIONS,
+	CreateProductBody,
+	useCreateProductMutation,
+} from '../../../app/productsApi';
 import { useState } from 'react';
 import styles from './Form.module.css';
 import { Button } from '../Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { Input, InputTypes, Type } from '../Input/Input';
-import { COLLECTIONS } from '../../../types/collectionEnums';
-import { useCreateProductMutation } from '../../../app/productsApi';
-import { CreateProductBody } from '../../../types/productInterface';
 
 export const Form = () => {
 	const navigate = useNavigate();
 
 	const [inputs, setInputs] = useState({
 		name: '',
-		quantity: '',
 		price: '',
+		quantity: '',
 	});
 
 	const [error, setError] = useState('');

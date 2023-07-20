@@ -1,9 +1,11 @@
 import { productsApi } from './productsApi';
 import { configureStore } from '@reduxjs/toolkit';
+import editModeReducer from './editModeSlice';
 import { setupListeners } from '@reduxjs/toolkit/dist/query';
 
 export const store = configureStore({
 	reducer: {
+		editModeReducer: editModeReducer,
 		[productsApi.reducerPath]: productsApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>

@@ -1,8 +1,10 @@
 import styles from './Item.module.css';
 import { LuEdit } from 'react-icons/lu';
 import { Button } from '../Button/Button';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../app/store';
 import { RiDeleteBin7Line } from 'react-icons/ri';
-import { COLLECTIONS } from '../../../types/collectionEnums';
+import { COLLECTIONS } from '../../../app/productsApi';
 import { useMoveProductMutation } from '../../../app/productsApi';
 
 export type ClickHandler = React.MouseEventHandler<HTMLButtonElement>;
@@ -39,6 +41,10 @@ export const ItemCard = ({
 		await moveProduct({ collectionName, id });
 	};
 
+	const shouldEdit = useSelector(
+		(state: RootState) => state.editModeReducer.value
+	);
+
 	return (
 		<div className={styles.cardBackground}>
 			{collectionName === COLLECTIONS.BOUGHT_PRODUCTS && (
@@ -59,10 +65,15 @@ export const ItemCard = ({
 				<p>Qty: {productData.quantity}</p>
 				<p>Price: ${productData.price}</p>
 			</div>
-			<div className={styles.rightSide}>
-				<Button icon={<LuEdit />} onClick={changeMode} />
-				<Button icon={<RiDeleteBin7Line />} onClick={onDeleteHandler} />
-			</div>
+			{shouldEdit && (
+				<div className={styles.rightSide}>
+					<Button icon={<LuEdit />} onClick={changeMode} />
+					<Button
+						icon={<RiDeleteBin7Line />}
+						onClick={onDeleteHandler}
+					/>
+				</div>
+			)}
 		</div>
 	);
 };

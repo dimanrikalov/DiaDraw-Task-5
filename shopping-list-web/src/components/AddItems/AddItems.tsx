@@ -1,4 +1,5 @@
 import {
+	COLLECTIONS,
 	useMoveAllMutation,
 	useDeleteAllMutation,
 	useGetAllProductsQuery,
@@ -7,7 +8,7 @@ import { List } from '../utils/List/List';
 import { Item } from '../utils/Item/Item';
 import styles from './AddItems.module.css';
 import { AddItemsHeader } from './AddItemsHeader';
-import { COLLECTIONS } from '../../types/collectionEnums';
+
 
 export const AddItems = () => {
 	const { data, isLoading } = useGetAllProductsQuery(

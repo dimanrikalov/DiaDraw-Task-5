@@ -1,8 +1,7 @@
 import { Item } from '../utils/Item/Item';
 import { List } from '../utils/List/List';
 import styles from './ToBuyList.module.css';
-import { COLLECTIONS } from '../../types/collectionEnums';
-import { ProductEntry } from '../../types/productInterface';
+import { ProductEntry, COLLECTIONS } from '../../app/productsApi';
 
 export const ListContainer = ({
 	header,
