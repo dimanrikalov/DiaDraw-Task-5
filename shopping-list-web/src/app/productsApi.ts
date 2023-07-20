@@ -43,10 +43,13 @@ export const productsApi = createApi({
 			},
 			async onCacheEntryAdded(
 				collectionName: COLLECTIONS,
-				{ updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+				{ cacheDataLoaded, updateCachedData, cacheEntryRemoved }
 			) {
 				let unsubscribe: Unsubscribe;
+
 				try {
+					await cacheDataLoaded;
+
 					unsubscribe = onSnapshot(
 						collection(firestore, collectionName),
 						(snapshot) => {
