@@ -1,8 +1,17 @@
 import styles from './Item.module.css';
 import { Button } from '../Button/Button';
 import { Input, InputTypes, Type } from '../Input/Input';
+import { IProductData, PRODUCT_DATA_KEYS } from './ItemCard';
 import { COLLECTIONS } from '../../../types/collectionEnums';
 import { useEditProductMutation } from '../../../app/productsApi';
+
+interface IEditItemBody {
+	id: string;
+	inputValues: IProductData;
+	collectionName: COLLECTIONS;
+	setIsInEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+	setInputValues: React.Dispatch<React.SetStateAction<IProductData>>;
+}
 
 export const EditItem = ({
 	id,
@@ -10,15 +19,7 @@ export const EditItem = ({
 	collectionName,
 	setInputValues,
 	setIsInEditMode,
-}: {
-	id: string;
-	collectionName: COLLECTIONS;
-	inputValues: { name: string; quantity: string; price: string };
-	setInputValues: React.Dispatch<
-		React.SetStateAction<{ name: string; quantity: string; price: string }>
-	>;
-	setIsInEditMode: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+}: IEditItemBody) => {
 	const [editProduct] = useEditProductMutation();
 
 	const onEditHandler = async () => {
@@ -34,6 +35,13 @@ export const EditItem = ({
 		setIsInEditMode(false);
 	};
 
+	const setInput = (e: React.BaseSyntheticEvent, key: PRODUCT_DATA_KEYS) => {
+		setInputValues((prev) => ({
+			...prev,
+			[key]: e.target.value,
+		}));
+	};
+
 	return (
 		<div className={styles.cardBackground}>
 			{collectionName === COLLECTIONS.BOUGHT_PRODUCTS && (
@@ -41,39 +49,30 @@ export const EditItem = ({
 			)}
 			<div className={styles.editContainer}>
 				<Input
-					inputType={InputTypes.NAME_INPUT}
+					type={Type.TEXT}
 					placeholder="Watermelon"
-					type={Type.TEXT}
 					value={inputValues.name}
+					elementId={InputTypes.NAME_INPUT}
 					setInputs={(e: React.BaseSyntheticEvent) =>
-						setInputValues((prev) => ({
-							...prev,
-							name: e.target.value,
-						}))
+						setInput(e, PRODUCT_DATA_KEYS.NAME)
 					}
 				/>
 				<Input
-					inputType={InputTypes.NAME_INPUT}
+					type={Type.TEXT}
 					placeholder="Quantity"
-					type={Type.TEXT}
 					value={inputValues.quantity}
+					elementId={InputTypes.NAME_INPUT}
 					setInputs={(e: React.BaseSyntheticEvent) =>
-						setInputValues((prev) => ({
-							...prev,
-							quantity: e.target.value,
-						}))
+						setInput(e, PRODUCT_DATA_KEYS.QUANTITY)
 					}
 				/>
 				<Input
-					inputType={InputTypes.NAME_INPUT}
-					placeholder="Price"
 					type={Type.TEXT}
+					placeholder="Price"
 					value={inputValues.price}
+					elementId={InputTypes.NAME_INPUT}
 					setInputs={(e: React.BaseSyntheticEvent) =>
-						setInputValues((prev) => ({
-							...prev,
-							price: e.target.value,
-						}))
+						setInput(e, PRODUCT_DATA_KEYS.PRICE)
 					}
 				/>
 				<Button text={'Edit'} onClick={onEditHandler} />

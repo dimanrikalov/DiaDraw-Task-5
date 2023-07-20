@@ -4,10 +4,6 @@ import { Button } from '../Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { Input, InputTypes, Type } from '../Input/Input';
 import { COLLECTIONS } from '../../../types/collectionEnums';
-import {
-	createProduct,
-	ProductBody,
-} from '../../../utils/firestore-operations';
 import { useCreateProductMutation } from '../../../app/productsApi';
 import { CreateProductBody } from '../../../types/productInterface';
 
@@ -49,7 +45,7 @@ export const Form = () => {
 				<form className={styles.form} onSubmit={onSubmitHandler}>
 					{error && <h4>{error}</h4>}
 					<Input
-						inputType={InputTypes.NAME_INPUT}
+						elementId={InputTypes.NAME_INPUT}
 						label={'Enter item'}
 						placeholder={'Milkshake'}
 						type={Type.TEXT}
@@ -62,7 +58,7 @@ export const Form = () => {
 						}
 					/>
 					<Input
-						inputType={InputTypes.QUANTITY_INPUT}
+						elementId={InputTypes.QUANTITY_INPUT}
 						label={'Enter quantity'}
 						placeholder={'2'}
 						type={Type.NUMBER}
@@ -75,7 +71,7 @@ export const Form = () => {
 						}
 					/>
 					<Input
-						inputType={InputTypes.PRICE_INPUT}
+						elementId={InputTypes.PRICE_INPUT}
 						label={'Enter price'}
 						placeholder={'$2.50'}
 						type={Type.TEXT}

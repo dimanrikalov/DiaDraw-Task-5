@@ -20,7 +20,7 @@ export const Button = (props: ButtonProps) => {
 			? styles.button
 			: `${styles.button} ${styles.iconButton}`;
 	const value = 'text' in props ? props.text : props.icon;
-	
+
 	return (
 		<button className={className} onClick={props.onClick}>
 			{value}

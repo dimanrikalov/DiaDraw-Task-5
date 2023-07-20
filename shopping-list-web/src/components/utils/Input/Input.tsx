@@ -11,30 +11,32 @@ export enum Type {
 	NUMBER = 'number',
 }
 
-export const Input = ({
-	label,
-	placeholder,
-	type,
-	inputType,
-	value,
-	setInputs,
-}: {
+interface IInputBody {
+	type: Type;
+	value: string;
 	label?: string;
 	placeholder: string;
-	type: Type;
-	inputType: InputTypes;
-	value: string;
+	elementId: InputTypes;
 	setInputs: React.ChangeEventHandler;
-}) => {
+}
+
+export const Input = ({
+	type,
+	value,
+	label,
+	elementId,
+	setInputs,
+	placeholder,
+}: IInputBody) => {
 	return (
 		<div className={styles.inputContainer}>
-			{label && <label htmlFor={inputType}>{label}</label>}
+			{label && <label htmlFor={elementId}>{label}</label>}
 			<input
-				id={inputType}
 				type={type}
-				placeholder={placeholder}
 				value={value}
+				id={elementId}
 				onChange={setInputs}
+				placeholder={placeholder}
 			/>
 		</div>
 	);

@@ -1,17 +1,14 @@
-import {
-	useDeleteProductMutation,
-	useMoveProductMutation,
-} from '../../../app/productsApi';
 import { useState } from 'react';
-import { EditItem } from './EditItemCard';
 import { ItemCard } from './ItemCard';
+import { EditItem } from './EditItemCard';
 import { COLLECTIONS } from '../../../types/collectionEnums';
+import { useDeleteProductMutation } from '../../../app/productsApi';
 
 export interface ItemInterface {
-	name: string;
-	quantity: number;
-	price: number;
 	id: string;
+	name: string;
+	price: number;
+	quantity: number;
 	collectionName: COLLECTIONS;
 }
 
@@ -22,7 +19,6 @@ export const Item = ({
 	quantity,
 	collectionName,
 }: ItemInterface) => {
-	const [moveProduct] = useMoveProductMutation();
 	const [deleteProduct] = useDeleteProductMutation();
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [inputValues, setInputValues] = useState({
@@ -33,10 +29,6 @@ export const Item = ({
 
 	const onDeleteHandler = () => {
 		deleteProduct({ collectionName, id });
-	};
-
-	const handleCheckboxChange = async () => {
-		await moveProduct({ collectionName, id });
 	};
 
 	const changeMode = () => {
@@ -59,13 +51,14 @@ export const Item = ({
 	) : (
 		<ItemCard
 			id={id}
-			name={name}
+			productData={{
+				name,
+				price: price.toString(),
+				quantity: quantity.toString(),
+			}}
 			changeMode={changeMode}
-			price={price.toString()}
-			quantity={quantity.toString()}
 			collectionName={collectionName}
 			onDeleteHandler={onDeleteHandler}
-			handleCheckboxChange={handleCheckboxChange}
 		/>
 	);
 };

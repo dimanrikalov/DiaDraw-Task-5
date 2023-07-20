@@ -1,29 +1,21 @@
-import { ROUTES } from '../../router';
-import { Item } from '../utils/Item/Item';
-import { MdCancel } from 'react-icons/md';
-import { List } from '../utils/List/List';
-import styles from './AddItems.module.css';
-import { HiDocument } from 'react-icons/hi';
-import { useNavigate } from 'react-router-dom';
-import { IoIosAddCircle } from 'react-icons/io';
-import { Button } from '../utils/Button/Button';
-import { IoChevronBackCircle } from 'react-icons/io5';
-import { COLLECTIONS } from '../../types/collectionEnums';
 import {
+	useMoveAllMutation,
 	useDeleteAllMutation,
 	useGetAllProductsQuery,
-	useMoveAllMutation,
 } from '../../app/productsApi';
+import { List } from '../utils/List/List';
+import { Item } from '../utils/Item/Item';
+import styles from './AddItems.module.css';
+import { AddItemsHeader } from './AddItemsHeader';
+import { COLLECTIONS } from '../../types/collectionEnums';
 
 export const AddItems = () => {
-	const navigate = useNavigate();
-
 	const { data, isLoading } = useGetAllProductsQuery(
 		COLLECTIONS.PRODUCTS_TO_BE_ADDED
 	);
 
-	const [deleteAll] = useDeleteAllMutation();
 	const [moveAll] = useMoveAllMutation();
+	const [deleteAll] = useDeleteAllMutation();
 
 	const handleCancel = async () => {
 		await deleteAll(COLLECTIONS.PRODUCTS_TO_BE_ADDED);
@@ -39,24 +31,10 @@ export const AddItems = () => {
 	return (
 		<div className={styles.container}>
 			<div className={styles.listContainer}>
-				<div className={styles.titleDiv}>
-					<h4>Items to add</h4>
-					<div className={styles.operationsContainer}>
-						<Button
-							icon={<HiDocument />}
-							onClick={() => navigate(ROUTES.CREATE_ITEM)}
-						/>
-						<Button
-							icon={<IoIosAddCircle />}
-							onClick={handleSubmit}
-						/>
-						<Button icon={<MdCancel />} onClick={handleCancel} />
-					</div>
-					<Button
-						icon={<IoChevronBackCircle />}
-						onClick={() => navigate(ROUTES.HOME)}
-					/>
-				</div>
+				<AddItemsHeader
+					handleSubmit={handleSubmit}
+					handleCancel={handleCancel}
+				/>
 				<List>
 					{isLoading === true ? (
 						<h4>Loading...</h4>
