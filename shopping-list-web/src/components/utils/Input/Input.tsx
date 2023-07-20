@@ -19,7 +19,7 @@ export const Input = ({
 	value,
 	setInputs,
 }: {
-	label: string;
+	label?: string;
 	placeholder: string;
 	type: Type;
 	inputType: InputTypes;
@@ -28,7 +28,7 @@ export const Input = ({
 }) => {
 	return (
 		<div className={styles.inputContainer}>
-			<label htmlFor={inputType}>{label}</label>
+			{label && <label htmlFor={inputType}>{label}</label>}
 			<input
 				id={inputType}
 				type={type}

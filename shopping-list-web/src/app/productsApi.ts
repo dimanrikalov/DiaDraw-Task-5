@@ -1,27 +1,22 @@
 import {
-	ApiProvider,
-	createApi,
-	fakeBaseQuery,
-} from '@reduxjs/toolkit/query/react';
-import {
-	CreateProductBody,
-	Product,
-	ProductEntry,
-} from '../types/productInterface';
-import {
-	DocumentData,
-	DocumentReference,
-	addDoc,
-	collection,
-	deleteDoc,
 	doc,
 	getDoc,
+	addDoc,
 	getDocs,
+	deleteDoc,
+	collection,
 	onSnapshot,
-	query,
+	Unsubscribe,
+	updateDoc,
 } from 'firebase/firestore';
+import {
+	Product,
+	ProductEntry,
+	CreateProductBody,
+} from '../types/productInterface';
 import { firestore } from '../firebase_setup/firebase';
 import { COLLECTIONS } from '../types/collectionEnums';
+import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const productsApi = createApi({
 	reducerPath: 'productsApi',
@@ -37,7 +32,7 @@ export const productsApi = createApi({
 				collectionName: COLLECTIONS,
 				{ updateCachedData, cacheDataLoaded, cacheEntryRemoved }
 			) {
-				let unsubscribe;
+				let unsubscribe: Unsubscribe;
 				try {
 					unsubscribe = onSnapshot(
 						collection(firestore, collectionName),
@@ -57,6 +52,10 @@ export const productsApi = createApi({
 				}
 				await cacheEntryRemoved;
 				unsubscribe && unsubscribe();
+
+				return new Promise(() => {
+					unsubscribe();
+				});
 			},
 		}),
 		createProduct: builder.mutation({
@@ -115,6 +114,25 @@ export const productsApi = createApi({
 								})
 						)
 					);
+				} catch (err: any) {
+					return err.message;
+				}
+			},
+		}),
+		editProduct: builder.mutation({
+			queryFn: async ({
+				collectionName,
+				id,
+				data,
+			}: {
+				collectionName: COLLECTIONS;
+				id: string;
+				data: Product;
+			}) => {
+				try {
+					await updateDoc(doc(firestore, collectionName, id), {
+						...data,
+					});
 				} catch (err: any) {
 					return err.message;
 				}
@@ -195,4 +213,5 @@ export const {
 	useMoveAllMutation,
 	useDeleteProductMutation,
 	useMoveProductMutation,
+	useEditProductMutation,
 } = productsApi;

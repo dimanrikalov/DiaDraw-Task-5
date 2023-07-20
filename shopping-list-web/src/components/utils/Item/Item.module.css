@@ -33,3 +33,17 @@
 	width: 95%;
 	background-color: black;
 }
+
+.editContainer {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+}
+
+.editContainer > :first-child {
+	width: 30%;
+}
+
+.editContainer > :not(:first-child) {
+	width: 22%;
+}

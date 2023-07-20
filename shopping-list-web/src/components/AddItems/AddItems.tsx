@@ -9,7 +9,6 @@ import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { IoChevronBackCircle } from 'react-icons/io5';
 import { COLLECTIONS } from '../../types/collectionEnums';
-
 import {
 	useDeleteAllMutation,
 	useGetAllProductsQuery,
