@@ -1,6 +1,6 @@
 import { productsApi } from './productsApi';
-import { configureStore } from '@reduxjs/toolkit';
 import editModeReducer from './editModeSlice';
+import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/dist/query';
 
 export const store = configureStore({
