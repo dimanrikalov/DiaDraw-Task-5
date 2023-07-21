@@ -63,7 +63,7 @@ export const EditItemCard = ({
 					type={Type.TEXT}
 					placeholder="Quantity"
 					value={inputValues.quantity}
-					elementId={InputTypes.NAME_INPUT}
+					elementId={InputTypes.QUANTITY_INPUT}
 					setInputs={(e: React.BaseSyntheticEvent) =>
 						setInput(e, PRODUCT_DATA_KEYS.QUANTITY)
 					}
@@ -72,7 +72,7 @@ export const EditItemCard = ({
 					type={Type.TEXT}
 					placeholder="Price"
 					value={inputValues.price}
-					elementId={InputTypes.NAME_INPUT}
+					elementId={InputTypes.PRICE_INPUT}
 					setInputs={(e: React.BaseSyntheticEvent) =>
 						setInput(e, PRODUCT_DATA_KEYS.PRICE)
 					}

@@ -63,28 +63,29 @@ export const productsApi = createApi({
 				{ cacheDataLoaded, updateCachedData, cacheEntryRemoved }
 			) {
 				let unsubscribe: Unsubscribe;
+				let error;
 
-				try {
-					await cacheDataLoaded;
+				await cacheDataLoaded;
 
-					unsubscribe = onSnapshot(
-						collection(firestore, collectionName),
-						(snapshot) => {
-							updateCachedData((draft) => {
-								return snapshot?.docs?.map((doc) => {
-									return {
-										...doc.data(),
-										id: doc.id,
-									};
-								}) as ProductEntry[];
-							});
-						},
-						(error: FirestoreError) => {
-							throw new Error(error.message);
-						}
-					);
-				} catch (err: any) {
-					return err.message;
+				unsubscribe = onSnapshot(
+					collection(firestore, collectionName),
+					(snapshot) => {
+						updateCachedData((draft) => {
+							return snapshot?.docs?.map((doc) => {
+								return {
+									...doc.data(),
+									id: doc.id,
+								};
+							}) as ProductEntry[];
+						});
+					},
+					(err: FirestoreError) => {
+						error = { ...err };
+					}
+				);
+
+				if (error) {
+					return error;
 				}
 
 				await cacheEntryRemoved;
@@ -96,94 +97,100 @@ export const productsApi = createApi({
 			},
 		}),
 		createProduct: builder.mutation({
-			queryFn: async (body: CreateProductBody) => {
-				try {
-					const ref = collection(firestore, body.collectionToModify);
-					const data = {
-						name: body.name,
-						quantity: body.quantity,
-						price: body.price,
-					};
-					const res = await addDoc(ref, data);
-					if (!res) {
-						throw new Error('Could not create element');
-					}
-				} catch (err: any) {
-					return err.message;
-				}
+			queryFn: (body: CreateProductBody) => {
+				let error;
+
+				const ref = collection(firestore, body.collectionToModify);
+				const data = {
+					name: body.name,
+					quantity: body.quantity,
+					price: body.price,
+				};
+
+				addDoc(ref, data).catch((err) => (error = { ...err }));
+				return { error };
 			},
 		}),
 		deleteAll: builder.mutation({
-			queryFn: async (collectionToDelete: COLLECTIONS) => {
-				try {
-					const ref = collection(firestore, collectionToDelete);
-					const querySnapshot = await getDocs(ref);
-					Promise.all(
-						querySnapshot.docs.map(
-							(doc) => new Promise(() => deleteDoc(doc.ref))
-						)
-					).catch((err) => {
-						throw new Error('Could not delete all elements!');
+			queryFn: (collectionToDelete: COLLECTIONS) => {
+				let error;
+
+				const ref = collection(firestore, collectionToDelete);
+				getDocs(ref)
+					.then((querySnapshot) => {
+						Promise.all(
+							querySnapshot.docs.map(
+								(doc) => new Promise(() => deleteDoc(doc.ref))
+							)
+						).catch((err) => {
+							error = { ...err }; //could not fulfill all delete docs promises
+						});
+					})
+					.catch((err: any) => {
+						error = { ...err }; //could not get the docs
 					});
-				} catch (err: any) {
-					return err.message;
-				}
+
+				return { error };
 			},
 		}),
 		moveAll: builder.mutation({
-			queryFn: async ({
-				srcCollection,
-				destCollection,
-			}: IMoveAllBody) => {
-				try {
-					const srcRef = collection(firestore, srcCollection);
-					const destRef = collection(firestore, destCollection);
+			queryFn: ({ srcCollection, destCollection }: IMoveAllBody) => {
+				let error;
 
-					const querySnapshot = await getDocs(srcRef);
-					Promise.all(
-						querySnapshot.docs.map(
-							(product) =>
-								new Promise(() => {
-									addDoc(destRef, product.data()).then(() =>
-										deleteDoc(product.ref)
-									);
-								})
-						)
-					).catch((err) => {
-						throw new Error('Could not move all elements!');
+				const srcRef = collection(firestore, srcCollection);
+				const destRef = collection(firestore, destCollection);
+
+				getDocs(srcRef)
+					.then((querySnapshot) => {
+						Promise.all(
+							querySnapshot.docs.map(
+								(product) =>
+									new Promise(() => {
+										addDoc(destRef, product.data()).then(
+											() => deleteDoc(product.ref)
+										);
+									})
+							)
+						).catch((err) => {
+							error = { ...err }; //could not fulfill all add docs promises
+						});
+					})
+					.catch((err) => {
+						error = { ...err }; //could not get the docs
 					});
-				} catch (err: any) {
-					return err.message;
-				}
+
+				return { error };
 			},
 		}),
 		editProduct: builder.mutation({
-			queryFn: async ({ collectionName, id, data }: IEditProduct) => {
-				try {
-					await updateDoc(doc(firestore, collectionName, id), {
-						...data,
-					}).catch((err) => {
-						throw new Error('Could not move all elements!');
-					});
-				} catch (err: any) {
-					return err.message;
-				}
+			queryFn: ({ collectionName, id, data }: IEditProduct) => {
+				let error;
+
+				updateDoc(doc(firestore, collectionName, id), {
+					...data,
+				}).catch((err) => {
+					error = { ...err };
+				});
+
+				return { error };
 			},
 		}),
 		deleteProduct: builder.mutation({
-			queryFn: async ({ collectionName, id }: IModifyProduct) => {
-				try {
-					const ref = doc(firestore, collectionName, id);
-					await deleteDoc(ref).catch((err) => {
-						throw new Error('Could not delete element!');
-					});
-				} catch (err: any) {
-					return err.message;
-				}
+			queryFn: ({ collectionName, id }: IModifyProduct) => {
+				let error;
+
+				const ref = doc(firestore, collectionName, id);
+				deleteDoc(ref).catch((err) => {
+					error = { ...err };
+				});
+
+				return { error };
 			},
 		}),
 		moveProduct: builder.mutation({
 			queryFn: async ({ collectionName, id }: IModifyProduct) => {
+				let error;
+
 				const [srcCollection, destCollection] =
 					collectionName === COLLECTIONS.PRODUCTS_TO_BUY
 						? [
@@ -204,8 +211,10 @@ export const productsApi = createApi({
 					await addDoc(collectionRef, productData);
 					await deleteDoc(ref);
 				} catch (err: any) {
-					return err.message;
+					error = { ...err };
 				}
+
+				return { error };
 			},
 		}),
 	}),
