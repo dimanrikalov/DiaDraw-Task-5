@@ -5,6 +5,7 @@ import { ToBuyList } from './components/ToBuyList/ToBuyList';
 import { CreateItem } from './components/CreateItem/CreateItem';
 import { SignUp } from './components/SignUp/SignUp';
 import { getAuth } from 'firebase/auth';
+import { useGetUserQuery } from './app/userApi';
 
 export enum ROUTES {
 	HOME = '/',
@@ -17,10 +18,13 @@ export enum ROUTES {
 }
 
 const AuthGuard = () => {
-	const auth = getAuth();
-	const user = auth.currentUser;
+	const { data, isLoading } = useGetUserQuery(undefined);
 
-	if (!user) {
+	if (isLoading) {
+		return <h1>Loading...</h1>;
+	}
+
+	if (!data) {
 		return <Navigate to={ROUTES.WELCOME} />;
 	}
 	return <Outlet />;
