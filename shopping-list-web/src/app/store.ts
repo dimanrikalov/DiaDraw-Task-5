@@ -1,3 +1,4 @@
+import { userApi } from './userApi';
 import { productsApi } from './productsApi';
 import editModeReducer from './editModeSlice';
 import { configureStore } from '@reduxjs/toolkit';
@@ -7,9 +8,12 @@ export const store = configureStore({
 	reducer: {
 		editModeReducer: editModeReducer,
 		[productsApi.reducerPath]: productsApi.reducer,
+		[userApi.reducerPath]: userApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware().concat(productsApi.middleware),
+		getDefaultMiddleware()
+			.concat(productsApi.middleware)
+			.concat(userApi.middleware),
 });
 
 setupListeners(store.dispatch);

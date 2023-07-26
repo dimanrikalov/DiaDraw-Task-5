@@ -8,6 +8,8 @@ import { ListContainer } from './ListContainer';
 import { RiEditCircleFill } from 'react-icons/ri';
 import { toggle } from '../../app/editModeSlice';
 import { useGetAllProductsQuery, COLLECTIONS } from '../../app/productsApi';
+import { useGetUserQuery } from '../../app/userApi';
+import { useEffect } from 'react';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
@@ -16,6 +18,10 @@ export const ToBuyList = () => {
 
 	const { data: boughtProducts, isLoading: isLoadingBought } =
 		useGetAllProductsQuery(COLLECTIONS.BOUGHT_PRODUCTS);
+
+	const {data: userData, isLoading} = useGetUserQuery(undefined);
+
+	console.log(userData);
 
 	const dispatch = useDispatch();
 
