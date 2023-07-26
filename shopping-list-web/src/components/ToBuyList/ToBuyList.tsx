@@ -10,6 +10,8 @@ import { toggle } from '../../app/editModeSlice';
 import { useGetAllProductsQuery, COLLECTIONS } from '../../app/productsApi';
 import { useGetUserQuery } from '../../app/userApi';
 import { useEffect } from 'react';
+import { IoLogOut } from 'react-icons/io5';
+import { getAuth, signOut } from 'firebase/auth';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
@@ -19,7 +21,7 @@ export const ToBuyList = () => {
 	const { data: boughtProducts, isLoading: isLoadingBought } =
 		useGetAllProductsQuery(COLLECTIONS.BOUGHT_PRODUCTS);
 
-	const {data: userData, isLoading} = useGetUserQuery(undefined);
+	const { data: userData, isLoading } = useGetUserQuery(undefined);
 
 	console.log(userData);
 
@@ -27,6 +29,18 @@ export const ToBuyList = () => {
 
 	const toggleEditMode = () => {
 		dispatch(toggle());
+	};
+
+	const logout = () => {
+		const auth = getAuth();
+		signOut(auth)
+			.then(() => {
+				console.log('successfully logged out');
+				navigate(ROUTES.WELCOME);
+			})
+			.catch((err: any) => {
+				console.log(err);
+			});
 	};
 
 	return (
@@ -37,6 +51,7 @@ export const ToBuyList = () => {
 					onClick={() => navigate(ROUTES.ADD_ITEM)}
 				/>
 				<Button icon={<RiEditCircleFill />} onClick={toggleEditMode} />
+				<Button icon={<IoLogOut />} onClick={logout} />
 			</div>
 			<div className={styles.listsContainer}>
 				<ListContainer

@@ -1,10 +1,11 @@
-import { Navigate, Outlet, useRoutes } from 'react-router-dom';
+import { useGetUserQuery } from './app/userApi';
+import { SignIn } from './components/SignIn/SignIn';
+import { SignUp } from './components/SignUp/SignUp';
 import { Welcome } from './components/Welcome/Welcome';
 import { AddItems } from './components/AddItems/AddItems';
 import { ToBuyList } from './components/ToBuyList/ToBuyList';
+import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 import { CreateItem } from './components/CreateItem/CreateItem';
-import { SignUp } from './components/SignUp/SignUp';
-import { getAuth } from 'firebase/auth';
 
 export enum ROUTES {
 	HOME = '/',
@@ -16,32 +17,54 @@ export enum ROUTES {
 	ALREADY_BOUGHT_ITEMS = '/bought-items',
 }
 
-const AuthGuard = () => {
-	const auth = getAuth();
-	const user = auth.currentUser;
+enum GUARD_TYPE {
+	USER = 'user',
+	GUEST = 'guest',
+}
 
-	if (!user) {
-		return <Navigate to={ROUTES.WELCOME} />;
+const AuthGuard = ({ guardType }: { guardType: GUARD_TYPE }) => {
+	const { data: user, isLoading } = useGetUserQuery(undefined);
+
+	if (isLoading) {
+		return <h1>Loading...</h1>;
 	}
-	return <Outlet />;
+
+	if (guardType === GUARD_TYPE.GUEST) {
+		if (user && 'uid' in user) {
+			return <Navigate to={ROUTES.HOME} />;
+		}
+
+		return <Outlet />;
+	}
+
+	if (user && 'uid' in user) {
+		return <Outlet />;
+	}
+
+	return <Navigate to={ROUTES.WELCOME} />;
 };
 
 export const Router = () => {
 	const router = useRoutes([
 		{
-			path: ROUTES.WELCOME,
-			element: <Welcome />,
+			element: <AuthGuard guardType={GUARD_TYPE.GUEST} />,
+			children: [
+				{
+					path: ROUTES.WELCOME,
+					element: <Welcome />,
+				},
+				{
+					path: ROUTES.SIGN_UP,
+					element: <SignUp />,
+				},
+			],
 		},
 		{
-			path: ROUTES.SIGN_UP,
-			element: <SignUp />,
+			path: ROUTES.SIGN_IN,
+			element: <SignIn />
 		},
-		// {
-		// 	path: ROUTES.SIGN_IN,
-		// 	element: <SignIn />
-		// },
 		{
-			element: <AuthGuard />,
+			element: <AuthGuard guardType={GUARD_TYPE.USER} />,
 			children: [
 				{
 					path: ROUTES.HOME,

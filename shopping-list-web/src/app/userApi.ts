@@ -41,7 +41,9 @@ export const userApi = createApi({
 							};
 						});
 					} else {
-						return {};
+						updateCachedData(() => {
+							return {};
+						});
 					}
 				});
 

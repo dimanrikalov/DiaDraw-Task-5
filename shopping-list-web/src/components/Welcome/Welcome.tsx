@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const Welcome = () => {
 	const navigate = useNavigate();
+	
 	return (
 		<div className={styles.welcomeContainer}>
 			<h1>Welcome!</h1>
