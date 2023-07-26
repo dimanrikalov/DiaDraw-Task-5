@@ -1,7 +1,11 @@
 import { MouseEvent, useState } from 'react';
 import styles from '../SignUp/SignUp.module.css';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+	getAuth,
+	signInAnonymously,
+	signInWithEmailAndPassword,
+} from 'firebase/auth';
 import { ROUTES } from '../../router';
 
 export const SignIn = () => {

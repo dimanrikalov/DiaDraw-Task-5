@@ -35,6 +35,7 @@ export const ToBuyList = () => {
 		const auth = getAuth();
 		signOut(auth)
 			.then(() => {
+				
 				console.log('successfully logged out');
 				navigate(ROUTES.WELCOME);
 			})

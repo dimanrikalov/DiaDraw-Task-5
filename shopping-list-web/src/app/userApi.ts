@@ -8,7 +8,11 @@ export interface IUser {
 	uid: string;
 }
 
-type TResult = IUser | {};
+export interface IAnonymous {
+	uid: string;
+}
+
+type TResult = IUser | IAnonymous | {};
 
 export const userApi = createApi({
 	reducerPath: 'userApi',
@@ -33,7 +37,12 @@ export const userApi = createApi({
 					if (userData) {
 						updateCachedData(() => {
 							const resData = userData.providerData[0];
-
+							if (!resData) {
+								// is anonymously logged
+								return {
+									uid: userData.uid,
+								};
+							}
 							return {
 								uid: resData.uid,
 								email: resData.email,
