@@ -11,6 +11,8 @@ export interface ItemInterface {
 	name: string;
 	price: number;
 	quantity: number;
+	creatorId: string;
+	imageUrl: string;
 	collectionName: COLLECTIONS;
 }
 
@@ -19,6 +21,8 @@ export const Item = ({
 	name,
 	price,
 	quantity,
+	imageUrl,
+	creatorId,
 	collectionName,
 }: ItemInterface) => {
 	const [deleteProduct] = useDeleteProductMutation();
@@ -51,7 +55,14 @@ export const Item = ({
 
 	return isInEditMode ? (
 		<EditItemCard
-			id={id}
+			data={{
+				id,
+				name,
+				price: price.toString(),
+				quantity: quantity.toString(),
+				creatorId,
+				imageUrl,
+			}}
 			inputValues={inputValues}
 			collectionName={collectionName}
 			setInputValues={setInputValues}
@@ -61,9 +72,12 @@ export const Item = ({
 		<ItemCard
 			id={id}
 			productData={{
+				id,
 				name,
 				price: price.toString(),
 				quantity: quantity.toString(),
+				creatorId: creatorId,
+				imageUrl: imageUrl,
 			}}
 			changeMode={changeMode}
 			collectionName={collectionName}

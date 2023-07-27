@@ -8,9 +8,7 @@ import {
 	collection,
 	onSnapshot,
 	Unsubscribe,
-	DocumentData,
 	FirestoreError,
-	DocumentReference,
 } from 'firebase/firestore';
 import { firestore } from '../firebase_setup/firebase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
@@ -21,31 +19,46 @@ export enum COLLECTIONS {
 	PRODUCTS_TO_BE_ADDED = 'productsToAdd',
 }
 
-export interface Product {
+export interface IProduct {
+	id: string;
 	name: string;
 	price: number;
 	quantity: number;
+	imageUrl: string;
+	creatorId: string;
 }
 
-export interface ProductEntry extends Product {
-	id: string;
-	ref: DocumentReference<DocumentData, DocumentData>;
-}
-
-export interface CreateProductBody extends Product {
+export interface ICreateProduct {
+	name: string;
+	price: number;
+	quantity: number;
+	imageUrl: string;
+	creatorId: string;
 	collectionToModify: COLLECTIONS;
 }
 
-interface IMoveAllBody {
-	srcCollection: COLLECTIONS;
-	destCollection: COLLECTIONS;
+export interface IUserProducts {
+	creatorId: string;
+	collection: COLLECTIONS;
 }
-interface IModifyProduct {
+
+interface IEditProductBody {
+	name?: string;
+	price?: number;
+	quantity?: number;
+	imageUrl?: string;
+	creatorId?: string;
+}
+
+export interface IEditProduct {
 	id: string;
 	collectionName: COLLECTIONS;
+	data?: IEditProductBody;
 }
-interface IEditProduct extends IModifyProduct {
-	data: Product;
+
+export interface IMoveProduct {
+	srcCollection: COLLECTIONS;
+	destCollection: COLLECTIONS;
 }
 
 export const productsApi = createApi({
@@ -53,13 +66,13 @@ export const productsApi = createApi({
 	baseQuery: fakeBaseQuery(),
 	tagTypes: ['Products'],
 	endpoints: (builder) => ({
-		getAllProducts: builder.query<ProductEntry[], string>({
+		getAllProducts: builder.query<IProduct[], IUserProducts>({
 			providesTags: ['Products'],
-			queryFn(collection: COLLECTIONS) {
+			queryFn() {
 				return { data: [] };
 			},
 			async onCacheEntryAdded(
-				collectionName: COLLECTIONS,
+				collectionToFetch: IUserProducts,
 				{ cacheDataLoaded, updateCachedData, cacheEntryRemoved }
 			) {
 				let unsubscribe: Unsubscribe;
@@ -68,15 +81,20 @@ export const productsApi = createApi({
 				await cacheDataLoaded;
 
 				unsubscribe = onSnapshot(
-					collection(firestore, collectionName),
+					collection(firestore, collectionToFetch.collection),
 					(snapshot) => {
 						updateCachedData((draft) => {
-							return snapshot?.docs?.map((doc) => {
+							const productsArr = snapshot?.docs?.map((doc) => {
 								return {
 									...doc.data(),
 									id: doc.id,
 								};
-							}) as ProductEntry[];
+							}) as IProduct[];
+							return productsArr.filter(
+								(doc) =>
+									doc.creatorId ===
+									collectionToFetch.creatorId
+							);
 						});
 					},
 					(err: FirestoreError) => {
@@ -97,7 +115,7 @@ export const productsApi = createApi({
 			},
 		}),
 		createProduct: builder.mutation({
-			queryFn: (body: CreateProductBody) => {
+			queryFn: (body: ICreateProduct) => {
 				let error;
 
 				const ref = collection(firestore, body.collectionToModify);
@@ -105,6 +123,8 @@ export const productsApi = createApi({
 					name: body.name,
 					quantity: body.quantity,
 					price: body.price,
+					imageUrl: body.imageUrl,
+					creatorId: body.creatorId,
 				};
 
 				addDoc(ref, data).catch((err) => (error = { ...err }));
@@ -141,7 +161,7 @@ export const productsApi = createApi({
 			},
 		}),
 		moveAll: builder.mutation({
-			queryFn: ({ srcCollection, destCollection }: IMoveAllBody) => {
+			queryFn: ({ srcCollection, destCollection }: IMoveProduct) => {
 				let error;
 
 				const srcRef = collection(firestore, srcCollection);
@@ -174,11 +194,11 @@ export const productsApi = createApi({
 			},
 		}),
 		editProduct: builder.mutation({
-			queryFn: ({ collectionName, id, data }: IEditProduct) => {
+			queryFn: (body: IEditProduct) => {
 				let error;
 
-				updateDoc(doc(firestore, collectionName, id), {
-					...data,
+				updateDoc(doc(firestore, body.collectionName, body.id), {
+					...body.data,
 				}).catch((err) => {
 					error = { ...err };
 				});
@@ -191,7 +211,7 @@ export const productsApi = createApi({
 			},
 		}),
 		deleteProduct: builder.mutation({
-			queryFn: ({ collectionName, id }: IModifyProduct) => {
+			queryFn: ({ collectionName, id }: IEditProduct) => {
 				let error;
 
 				const ref = doc(firestore, collectionName, id);
@@ -207,7 +227,7 @@ export const productsApi = createApi({
 			},
 		}),
 		moveProduct: builder.mutation({
-			queryFn: async ({ collectionName, id }: IModifyProduct) => {
+			queryFn: async ({ collectionName, id }: IEditProduct) => {
 				let error = 'No error';
 
 				const [srcCollection, destCollection] =

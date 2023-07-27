@@ -1,13 +1,11 @@
-import styles from './SignUp.module.css';
-import { MouseEvent, useState } from 'react';
 import {
 	getAuth,
-	createUserWithEmailAndPassword,
 	updateProfile,
-	signInWithEmailAndPassword,
+	createUserWithEmailAndPassword,
 } from 'firebase/auth';
+import styles from './SignUp.module.css';
+import { MouseEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../router';
 
 export const SignUp = () => {
 	const navigate = useNavigate();
@@ -48,18 +46,18 @@ export const SignUp = () => {
 
 				// localStorage.setItem('token', userCredential.user.refreshToken); //optional
 			})
-			.then(() => {
-				signInWithEmailAndPassword(
-					auth,
-					inputValues.email,
-					inputValues.password
-				)
-					.then(() => {
-						'Logged in successfully!';
-						navigate(ROUTES.HOME);
-					})
-					.catch((err: any) => setError(err.message));
-			})
+			// .then(() => {
+			// 	signInWithEmailAndPassword(
+			// 		auth,
+			// 		inputValues.email,
+			// 		inputValues.password
+			// 	)
+			// 		.then(() => {
+			// 			'Logged in successfully!';
+			// 			navigate(ROUTES.HOME);
+			// 		})
+			// 		.catch((err: any) => setError(err.message));
+			// })
 			.catch((err: any) => setError(err.message));
 	};
 

@@ -1,12 +1,11 @@
-import { Navigate, Outlet, useRoutes } from 'react-router-dom';
+import { useGetUserQuery } from './app/userApi';
+import { SignUp } from './components/SignUp/SignUp';
+import { SignIn } from './components/SignIn/SignIn';
 import { Welcome } from './components/Welcome/Welcome';
 import { AddItems } from './components/AddItems/AddItems';
 import { ToBuyList } from './components/ToBuyList/ToBuyList';
+import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 import { CreateItem } from './components/CreateItem/CreateItem';
-import { SignUp } from './components/SignUp/SignUp';
-import { getAuth } from 'firebase/auth';
-import { useGetUserQuery } from './app/userApi';
-import { SignIn } from './components/SignIn/SignIn';
 
 export enum ROUTES {
 	HOME = '/',
@@ -24,7 +23,7 @@ enum GUARD_TYPES {
 }
 
 const AuthGuard = ({ guardType }: { guardType: GUARD_TYPES }) => {
-	const { data, isLoading } = useGetUserQuery(undefined);
+	const { data, isLoading } = useGetUserQuery();
 
 	if (isLoading) {
 		return <h1>Loading...</h1>;

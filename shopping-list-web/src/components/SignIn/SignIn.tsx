@@ -3,7 +3,6 @@ import styles from '../SignUp/SignUp.module.css';
 import { useNavigate } from 'react-router-dom';
 import {
 	getAuth,
-	signInAnonymously,
 	signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { ROUTES } from '../../router';

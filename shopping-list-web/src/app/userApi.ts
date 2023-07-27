@@ -12,20 +12,20 @@ export interface IAnonymous {
 	uid: string;
 }
 
-type TResult = IUser | IAnonymous | {};
+export type TResult = IUser | IAnonymous | null;
 
 export const userApi = createApi({
 	reducerPath: 'userApi',
 	baseQuery: fakeBaseQuery(),
 	tagTypes: ['User'],
 	endpoints: (builder) => ({
-		getUser: builder.query<TResult, any>({
+		getUser: builder.query<TResult, void>({
 			providesTags: ['User'],
-			queryFn(_: any = {}) {
-				return { data: {} };
+			queryFn() {
+				return { data: null };
 			},
 			async onCacheEntryAdded(
-				_: any = {},
+				unusedArgument,
 				{ cacheDataLoaded, updateCachedData, cacheEntryRemoved }
 			) {
 				const auth = getAuth();
@@ -51,7 +51,7 @@ export const userApi = createApi({
 						});
 					} else {
 						updateCachedData(() => {
-							return {};
+							return null;
 						});
 					}
 				});

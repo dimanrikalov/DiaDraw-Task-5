@@ -8,11 +8,17 @@ import { List } from '../utils/List/List';
 import { Item } from '../utils/Item/Item';
 import styles from './AddItems.module.css';
 import { AddItemsHeader } from './AddItemsHeader';
-
+import { useGetUserQuery } from '../../app/userApi';
 
 export const AddItems = () => {
+	const { data: userData, isLoading: isLoadingUser } = useGetUserQuery();
+
 	const { data, isLoading } = useGetAllProductsQuery(
-		COLLECTIONS.PRODUCTS_TO_BE_ADDED
+		{
+			creatorId: userData!.uid,
+			collection: COLLECTIONS.PRODUCTS_TO_BE_ADDED,
+		},
+		{ skip: !userData }
 	);
 
 	const [moveAll] = useMoveAllMutation();
@@ -29,6 +35,10 @@ export const AddItems = () => {
 		});
 	};
 
+	if (isLoadingUser || isLoading) {
+		return <h1>Loading...</h1>;
+	}
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.listContainer}>
@@ -37,11 +47,11 @@ export const AddItems = () => {
 					handleCancel={handleCancel}
 				/>
 				<List>
-					{isLoading === true ? (
-						<h4>Loading...</h4>
-					) : data && typeof data !== 'string' && data.length > 0 ? (
+					{data && typeof data !== 'string' && data.length > 0 ? (
 						data.map((product) => (
 							<Item
+								creatorId={product.creatorId}
+								imageUrl={product.imageUrl}
 								key={Math.random()}
 								name={product.name}
 								price={product.price}

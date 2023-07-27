@@ -1,27 +1,39 @@
 import { ROUTES } from '../../router';
 import { useDispatch } from 'react-redux';
+import { IoLogOut } from 'react-icons/io5';
 import styles from './ToBuyList.module.css';
 import { useNavigate } from 'react-router-dom';
 import { IoIosAddCircle } from 'react-icons/io';
 import { Button } from '../utils/Button/Button';
 import { ListContainer } from './ListContainer';
-import { RiEditCircleFill } from 'react-icons/ri';
-import { toggle } from '../../app/editModeSlice';
-import { useGetAllProductsQuery, COLLECTIONS } from '../../app/productsApi';
-import { useGetUserQuery } from '../../app/userApi';
-import { useEffect } from 'react';
-import { IoLogOut } from 'react-icons/io5';
 import { getAuth, signOut } from 'firebase/auth';
+import { toggle } from '../../app/editModeSlice';
+import { RiEditCircleFill } from 'react-icons/ri';
+import { useGetUserQuery } from '../../app/userApi';
+import { useGetAllProductsQuery, COLLECTIONS } from '../../app/productsApi';
 
 export const ToBuyList = () => {
 	const navigate = useNavigate();
+
+	const { data: userData, isLoading: isLoadingUser } = useGetUserQuery();
+
 	const { data: productsToBuy, isLoading: isLoadingToBuy } =
-		useGetAllProductsQuery(COLLECTIONS.PRODUCTS_TO_BUY);
+		useGetAllProductsQuery(
+			{
+				creatorId: userData!.uid,
+				collection: COLLECTIONS.PRODUCTS_TO_BUY,
+			},
+			{ skip: !userData }
+		);
 
 	const { data: boughtProducts, isLoading: isLoadingBought } =
-		useGetAllProductsQuery(COLLECTIONS.BOUGHT_PRODUCTS);
-
-	const { data: userData, isLoading } = useGetUserQuery(undefined);
+		useGetAllProductsQuery(
+			{
+				creatorId: userData!.uid,
+				collection: COLLECTIONS.BOUGHT_PRODUCTS,
+			},
+			{ skip: !userData }
+		);
 
 	console.log(userData);
 
@@ -35,7 +47,6 @@ export const ToBuyList = () => {
 		const auth = getAuth();
 		signOut(auth)
 			.then(() => {
-				
 				console.log('successfully logged out');
 				navigate(ROUTES.WELCOME);
 			})
@@ -43,6 +54,10 @@ export const ToBuyList = () => {
 				console.log(err);
 			});
 	};
+
+	if (isLoadingUser) {
+		return <h1>Loading...</h1>;
+	}
 
 	return (
 		<div className={styles.container}>

@@ -2,17 +2,23 @@ import styles from './Item.module.css';
 import { LuEdit } from 'react-icons/lu';
 import { Button } from '../Button/Button';
 import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { RootState } from '../../../app/store';
 import { RiDeleteBin7Line } from 'react-icons/ri';
 import { COLLECTIONS } from '../../../app/productsApi';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { storage } from '../../../firebase_setup/firebase';
 import { useMoveProductMutation } from '../../../app/productsApi';
 
 export type ClickHandler = React.MouseEventHandler<HTMLButtonElement>;
 
 export interface IProductData {
+	id: string;
 	name: string;
 	price: string;
 	quantity: string;
+	imageUrl: string;
+	creatorId: string;
 }
 
 export enum PRODUCT_DATA_KEYS {
@@ -40,6 +46,13 @@ export const ItemCard = ({
 	const handleCheckboxChange = async () => {
 		await moveProduct({ collectionName, id });
 	};
+	const [imageUrl, setImageUrl] = useState('');
+
+	useEffect(() => {
+		getDownloadURL(ref(storage, productData.imageUrl)).then((res) => {
+			setImageUrl(res);
+		});
+	}, []);
 
 	const shouldEdit = useSelector(
 		(state: RootState) => state.editModeReducer.value
@@ -61,6 +74,11 @@ export const ItemCard = ({
 						onChange={handleCheckboxChange}
 					/>
 				)}
+				<img
+					src={imageUrl}
+					alt="item-img"
+					className={styles.productImg}
+				/>
 				<p>{productData.name}</p>
 				<p>Qty: {productData.quantity}</p>
 				<p>Price: ${productData.price}</p>

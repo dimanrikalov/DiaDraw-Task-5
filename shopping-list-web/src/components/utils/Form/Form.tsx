@@ -1,22 +1,28 @@
 import {
 	COLLECTIONS,
-	CreateProductBody,
+	ICreateProduct,
 	useCreateProductMutation,
 } from '../../../app/productsApi';
 import { useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import styles from './Form.module.css';
 import { Button } from '../Button/Button';
 import { useNavigate } from 'react-router-dom';
+import { ref, uploadBytes } from 'firebase/storage';
+import { useGetUserQuery } from '../../../app/userApi';
 import { Input, InputTypes, Type } from '../Input/Input';
+import { storage } from '../../../firebase_setup/firebase';
 
 export const Form = () => {
 	const navigate = useNavigate();
+	const { data: userData, isLoading: isLoadingUser } = useGetUserQuery();
 
 	const [inputs, setInputs] = useState({
 		name: '',
 		price: '',
 		quantity: '',
 	});
+	const [imageUpload, setImageUpload] = useState<File>();
 
 	const [error, setError] = useState('');
 	const [createProduct, { isLoading }] = useCreateProductMutation();
@@ -24,20 +30,51 @@ export const Form = () => {
 	const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setError('');
+		let uid;
+		if (!userData || !('uid' in userData)) {
+			setError('You must be logged in to be able to create');
+			return;
+		}
+
 		if (Object.values(inputs).some((x) => !!x === false)) {
 			setError('All fields are required');
 			return;
 		}
-		const payload: CreateProductBody = {
+
+		if (!imageUpload) {
+			setError('Product image is required!');
+			return;
+		}
+
+		const imageRef = ref(
+			storage,
+			`product-images/${imageUpload.name + uuid()}`
+		);
+		const uploadResult = await uploadBytes(imageRef, imageUpload);
+
+		const payload: ICreateProduct = {
 			name: inputs.name,
 			quantity: Number(inputs.quantity),
 			price: Number(inputs.price),
+			imageUrl: uploadResult.metadata.fullPath,
+			creatorId: userData.uid,
 			collectionToModify: COLLECTIONS.PRODUCTS_TO_BE_ADDED,
 		};
+
 		await createProduct(payload);
 
 		navigate(-1);
 	};
+
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files) {
+			setImageUpload(e.target.files[0]);
+		}
+	};
+
+	if (isLoadingUser) {
+		return <h1>Loading...</h1>;
+	}
 
 	return (
 		<>
@@ -84,6 +121,12 @@ export const Form = () => {
 								price: e.target.value,
 							}))
 						}
+					/>
+					<input
+						type="file"
+						name="myImage"
+						accept="image/png, image/gif, image/jpeg"
+						onChange={handleFileChange}
 					/>
 					<Button text={'Add item'} />
 				</form>

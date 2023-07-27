@@ -1,7 +1,7 @@
 import { Item } from '../utils/Item/Item';
 import { List } from '../utils/List/List';
 import styles from './ToBuyList.module.css';
-import { ProductEntry, COLLECTIONS } from '../../app/productsApi';
+import { IProduct, COLLECTIONS } from '../../app/productsApi';
 
 export const ListContainer = ({
 	header,
@@ -12,7 +12,7 @@ export const ListContainer = ({
 	header: string;
 	isLoading: boolean;
 	collectionName: COLLECTIONS;
-	products: ProductEntry[] | undefined | string;
+	products: IProduct[] | undefined | string;
 }) => {
 	return (
 		<div className={styles.listsContainer}>
@@ -26,11 +26,13 @@ export const ListContainer = ({
 					  products.length > 0 ? (
 						products.map((product) => (
 							<Item
+								id={product.id}
 								key={Math.random()}
 								name={product.name}
 								price={product.price}
 								quantity={product.quantity}
-								id={product.id}
+								imageUrl={product.imageUrl}
+								creatorId={product.creatorId}
 								collectionName={collectionName}
 							/>
 						))
