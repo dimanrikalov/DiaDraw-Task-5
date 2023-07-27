@@ -65,7 +65,7 @@ export const EditItemCard = ({
 			},
 		});
 
-		//remove curr image
+		//remove prev image
 		const currImageRef = ref(storage, imgUrl);
 		await deleteObject(currImageRef);
 

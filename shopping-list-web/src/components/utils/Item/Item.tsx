@@ -5,6 +5,8 @@ import {
 import { useState } from 'react';
 import { ItemCard } from './ItemCard';
 import { EditItemCard } from './EditItemCard';
+import { storage } from '../../../firebase_setup/firebase';
+import { deleteObject, ref } from 'firebase/storage';
 
 export interface ItemInterface {
 	id: string;
@@ -33,7 +35,7 @@ export const Item = ({
 		quantity: '',
 	});
 
-	const onDeleteHandler = () => {
+	const onDeleteHandler = async () => {
 		const hasConfirmed = window.confirm(
 			`Are you sure you want to delete "${name}" from the list?`
 		);
@@ -41,6 +43,10 @@ export const Item = ({
 		if (!hasConfirmed) {
 			return;
 		}
+
+		const currImageRef = ref(storage, imageUrl);
+		await deleteObject(currImageRef);
+
 		deleteProduct({ collectionName, id });
 	};
 
