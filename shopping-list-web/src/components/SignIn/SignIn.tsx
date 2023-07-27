@@ -1,86 +1,44 @@
-import styles from './SignUp.module.css';
 import { MouseEvent, useState } from 'react';
+import styles from '../SignUp/SignUp.module.css';
+import { useNavigate } from 'react-router-dom';
 import {
 	getAuth,
-	createUserWithEmailAndPassword,
-	updateProfile,
+	signInAnonymously,
 	signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../router';
 
-export const SignUp = () => {
+export const SignIn = () => {
 	const navigate = useNavigate();
 	const [error, setError] = useState('');
 	const [inputValues, setInputValues] = useState({
 		email: '',
-		username: '',
 		password: '',
 	});
 
 	const submitHandler = (e: MouseEvent) => {
 		e.preventDefault();
-		setError('');
-
-		console.log(inputValues);
-
-		if (
-			!inputValues.email ||
-			!inputValues.username ||
-			!inputValues.password
-		) {
+		if (!inputValues.email || !inputValues.password) {
 			setError('Both fields are required!');
 			return;
 		}
-		//submit
 		const auth = getAuth();
-		createUserWithEmailAndPassword(
+		signInWithEmailAndPassword(
 			auth,
 			inputValues.email,
 			inputValues.password
 		)
-			.then(async (userCredential) => {
-				if (auth.currentUser) {
-					await updateProfile(auth.currentUser, {
-						displayName: inputValues.username,
-					});
-				}
-
-				// localStorage.setItem('token', userCredential.user.refreshToken); //optional
-			})
-			.then(() => {
-				signInWithEmailAndPassword(
-					auth,
-					inputValues.email,
-					inputValues.password
-				)
-					.then(() => {
-						'Logged in successfully!';
-						navigate(ROUTES.HOME);
-					})
-					.catch((err: any) => setError(err.message));
-			})
-			.catch((err: any) => setError(err.message));
+			.then(() => navigate(ROUTES.HOME))
+			.catch((err: any) => {
+				setError(err.message);
+			});
 	};
 
 	return (
 		<div className={styles.signUpContainer}>
-			<h2>Sign-up</h2>
+			<h2>Sign-in</h2>
 			{error && <p className={styles.errorMessage}>{error}</p>}
 			<form className={styles.form}>
-				<div className={styles.inputContainer}>
-					<label htmlFor="username">Enter username:</label>
-					<input
-						type="text"
-						id="username"
-						onChange={(e) =>
-							setInputValues((prev) => ({
-								...prev,
-								username: e.target.value,
-							}))
-						}
-					/>
-				</div>
 				<div className={styles.inputContainer}>
 					<label htmlFor="email">Enter your email:</label>
 					<input
@@ -108,7 +66,7 @@ export const SignUp = () => {
 					/>
 				</div>
 				<button className={styles.btn} onClick={submitHandler}>
-					Sign-up
+					Sign-in
 				</button>
 			</form>
 		</div>
