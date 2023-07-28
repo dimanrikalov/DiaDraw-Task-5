@@ -30,7 +30,7 @@ export const Form = () => {
 	const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setError('');
-		let uid;
+	
 		if (!userData || !('uid' in userData)) {
 			setError('You must be logged in to be able to create');
 			return;

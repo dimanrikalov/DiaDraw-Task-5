@@ -3,6 +3,7 @@ import {
 	useMoveAllMutation,
 	useDeleteAllMutation,
 	useGetAllProductsQuery,
+	useGetProductPricesQuery,
 } from '../../app/productsApi';
 import { List } from '../utils/List/List';
 import { Item } from '../utils/Item/Item';
@@ -17,6 +18,7 @@ export const AddItems = () => {
 		{
 			creatorId: userData!.uid,
 			collection: COLLECTIONS.PRODUCTS_TO_BE_ADDED,
+			priceCondition: 0
 		},
 		{ skip: !userData }
 	);

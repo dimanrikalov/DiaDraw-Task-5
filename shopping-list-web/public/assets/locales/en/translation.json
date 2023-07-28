@@ -1,0 +1,7 @@
+{
+    "welcome_to_react": "Welcome to React and react-i18next",
+    "items_to_buy": "Items to buy",
+    "bought_items": "Bought items",
+    "loading": "Loading... {{percent}}",
+    "list_is_empty": "List is currently empty {{percent}}"
+}

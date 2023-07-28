@@ -34,9 +34,11 @@ export const userApi = createApi({
 				await cacheDataLoaded;
 
 				unsubscribe = onAuthStateChanged(auth, (userData) => {
-					if (userData) {
-						updateCachedData(() => {
+					updateCachedData(() => {
+						if (userData) {
 							const resData = userData.providerData[0];
+							console.log(userData);
+
 							if (!resData) {
 								// is anonymously logged
 								return {
@@ -44,16 +46,14 @@ export const userApi = createApi({
 								};
 							}
 							return {
-								uid: resData.uid,
+								uid: userData.uid,
 								email: resData.email,
 								displayName: resData.displayName,
 							};
-						});
-					} else {
-						updateCachedData(() => {
+						} else {
 							return null;
-						});
-					}
+						}
+					});
 				});
 
 				await cacheEntryRemoved;

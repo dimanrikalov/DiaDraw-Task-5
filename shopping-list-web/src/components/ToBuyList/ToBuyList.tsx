@@ -11,9 +11,10 @@ import { toggle } from '../../app/editModeSlice';
 import { RiEditCircleFill } from 'react-icons/ri';
 import { useGetUserQuery } from '../../app/userApi';
 import { useGetAllProductsQuery, COLLECTIONS } from '../../app/productsApi';
-
+import { useTranslation } from 'react-i18next';
 export const ToBuyList = () => {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	const { data: userData, isLoading: isLoadingUser } = useGetUserQuery();
 
@@ -22,6 +23,7 @@ export const ToBuyList = () => {
 			{
 				creatorId: userData!.uid,
 				collection: COLLECTIONS.PRODUCTS_TO_BUY,
+				priceCondition: 0,
 			},
 			{ skip: !userData }
 		);
@@ -31,11 +33,10 @@ export const ToBuyList = () => {
 			{
 				creatorId: userData!.uid,
 				collection: COLLECTIONS.BOUGHT_PRODUCTS,
+				priceCondition: 0,
 			},
 			{ skip: !userData }
 		);
-
-	console.log(userData);
 
 	const dispatch = useDispatch();
 
@@ -56,7 +57,7 @@ export const ToBuyList = () => {
 	};
 
 	if (isLoadingUser) {
-		return <h1>Loading...</h1>;
+		return <h1>{t('loading', {percent:'100'})}</h1>;
 	}
 
 	return (
@@ -71,13 +72,13 @@ export const ToBuyList = () => {
 			</div>
 			<div className={styles.listsContainer}>
 				<ListContainer
-					header={'Items to buy'}
+					header={t('items_to_buy')}
 					isLoading={isLoadingToBuy}
 					products={productsToBuy}
 					collectionName={COLLECTIONS.PRODUCTS_TO_BUY}
 				/>
 				<ListContainer
-					header={'Bought items'}
+					header={t('bought_items')}
 					isLoading={isLoadingBought}
 					products={boughtProducts}
 					collectionName={COLLECTIONS.BOUGHT_PRODUCTS}

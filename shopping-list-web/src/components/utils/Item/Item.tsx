@@ -5,8 +5,8 @@ import {
 import { useState } from 'react';
 import { ItemCard } from './ItemCard';
 import { EditItemCard } from './EditItemCard';
-import { storage } from '../../../firebase_setup/firebase';
 import { deleteObject, ref } from 'firebase/storage';
+import { storage } from '../../../firebase_setup/firebase';
 
 export interface ItemInterface {
 	id: string;

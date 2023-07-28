@@ -1,0 +1,10 @@
+rules_version = '2';
+
+service cloud.firestore {
+   match /databases/{database}/documents {    
+    match /boughtProducts/{boughtProduct} {
+      // allow read: if request.auth != null && resource.data.creatorId == 'dimo@abv.bg';
+      allow list: if debug(debug(resource.data.name) == 'Milkshake');
+    }
+  }
+}

@@ -42,6 +42,16 @@ export const EditItemCard = ({
 		}
 
 		if (!imageUpload) {
+			await editProduct({
+				collectionName,
+				id: data.id,
+				data: {
+					creatorId: userData.uid,
+					price: Number(inputValues.price),
+					quantity: Number(inputValues.quantity),
+				},
+			});
+			setIsInEditMode(false);
 			return;
 		}
 

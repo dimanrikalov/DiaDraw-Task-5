@@ -9,9 +9,13 @@ import {
 	onSnapshot,
 	Unsubscribe,
 	FirestoreError,
+	where,
+	query,
+	collectionGroup,
 } from 'firebase/firestore';
 import { firestore } from '../firebase_setup/firebase';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import { getAuth } from 'firebase/auth';
 
 export enum COLLECTIONS {
 	PRODUCTS_TO_BUY = 'productsToBuy',
@@ -40,6 +44,7 @@ export interface ICreateProduct {
 export interface IUserProducts {
 	creatorId: string;
 	collection: COLLECTIONS;
+	priceCondition: number;
 }
 
 interface IEditProductBody {
@@ -59,6 +64,15 @@ export interface IEditProduct {
 export interface IMoveProduct {
 	srcCollection: COLLECTIONS;
 	destCollection: COLLECTIONS;
+}
+
+export interface IGetProductPrices {
+	docPath: string;
+	condition: number;
+}
+
+export interface IPrice {
+	price: string;
 }
 
 export const productsApi = createApi({
@@ -81,24 +95,62 @@ export const productsApi = createApi({
 				await cacheDataLoaded;
 
 				unsubscribe = onSnapshot(
-					collection(firestore, collectionToFetch.collection),
+					query(
+						collection(firestore, collectionToFetch.collection),
+						where('creatorId', '==', collectionToFetch.creatorId)
+					),
 					(snapshot) => {
 						updateCachedData((draft) => {
 							const productsArr = snapshot?.docs?.map((doc) => {
+								console.log(doc);
 								return {
 									...doc.data(),
 									id: doc.id,
 								};
 							}) as IProduct[];
-							return productsArr.filter(
-								(doc) =>
-									doc.creatorId ===
-									collectionToFetch.creatorId
-							);
+							return productsArr;
 						});
 					},
 					(err: FirestoreError) => {
 						error = { ...err };
+					}
+				);
+
+				if (error) {
+					return error;
+				}
+
+				await cacheEntryRemoved;
+				unsubscribe && unsubscribe();
+
+				return new Promise(() => {
+					unsubscribe();
+				});
+			},
+		}),
+		getProductPrices: builder.query<IPrice[], IGetProductPrices | void>({
+			queryFn: () => {
+				return { data: [] };
+			},
+			async onCacheEntryAdded(
+				body: IGetProductPrices,
+				{ cacheDataLoaded, updateCachedData, cacheEntryRemoved }
+			) {
+				let unsubscribe: Unsubscribe;
+				let error;
+
+				await cacheDataLoaded;
+
+				unsubscribe = onSnapshot(
+					query(
+						collection(firestore, body.docPath),
+						where('price', '>', body.condition)
+					),
+					(snapshot) => {
+						updateCachedData((draft) => {
+							// console.log(snapshot.docs.map(x => x.data()));
+							return [];
+						});
 					}
 				);
 
@@ -119,6 +171,7 @@ export const productsApi = createApi({
 				let error;
 
 				const ref = collection(firestore, body.collectionToModify);
+
 				const data = {
 					name: body.name,
 					quantity: body.quantity,
@@ -127,7 +180,17 @@ export const productsApi = createApi({
 					creatorId: body.creatorId,
 				};
 
-				addDoc(ref, data).catch((err) => (error = { ...err }));
+				addDoc(ref, data)
+					.then((docRef) => {
+						const ref = collection(
+							firestore,
+							`${docRef.path}/nestedCollection`
+						);
+						addDoc(ref, {
+							price: body.price,
+						});
+					})
+					.catch((err) => (error = { ...err }));
 				if (error) {
 					return { error };
 				}
@@ -268,6 +331,7 @@ export const {
 	useEditProductMutation,
 	useGetAllProductsQuery,
 	useMoveProductMutation,
+	useGetProductPricesQuery,
 	useCreateProductMutation,
 	useDeleteProductMutation,
 } = productsApi;

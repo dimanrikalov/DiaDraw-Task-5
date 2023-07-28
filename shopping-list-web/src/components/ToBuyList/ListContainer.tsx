@@ -2,6 +2,7 @@ import { Item } from '../utils/Item/Item';
 import { List } from '../utils/List/List';
 import styles from './ToBuyList.module.css';
 import { IProduct, COLLECTIONS } from '../../app/productsApi';
+import { useTranslation } from 'react-i18next';
 
 export const ListContainer = ({
 	header,
@@ -14,6 +15,7 @@ export const ListContainer = ({
 	collectionName: COLLECTIONS;
 	products: IProduct[] | undefined | string;
 }) => {
+	const { t } = useTranslation();
 	return (
 		<div className={styles.listsContainer}>
 			<div className={styles.listContainer}>
@@ -37,7 +39,7 @@ export const ListContainer = ({
 							/>
 						))
 					) : (
-						<h4>List is currently empty</h4>
+						<h4>{t('list_is_empty', {percent: 32})}</h4>
 					)}
 				</List>
 			</div>
